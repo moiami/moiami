@@ -1,10 +1,20 @@
 import uuid
 
 from django.db import models
-from django.db.models import UUIDField, TextField, DateField, IntegerField, URLField, ManyToManyField, \
-    CASCADE, CharField, OneToOneField
+from django.db.models import (
+    CASCADE,
+    CharField,
+    DateField,
+    IntegerField,
+    ManyToManyField,
+    OneToOneField,
+    TextField,
+    URLField,
+    UUIDField,
+)
 
-from src.apps.subscription.models import Subscription
+from apps.subscription.models import Subscription
+
 
 class Genre(models.Model):
     id = UUIDField(primary_key=True,default=uuid.uuid4)
