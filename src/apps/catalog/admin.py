@@ -1,4 +1,3 @@
-from django.contrib import admin
 
 from src.apps.catalog.models import Genre, Video, Image, Movie
 

@@ -1,3 +1,22 @@
+# Mostly created by https://www.gitignore.io
+
+db.sqlite3
+
+### App #######################################################################
+
+public/*
+!public/.keep
+public_collected/*
+!public_collected/.keep
+
+.env*
+!.env.example
+docker-compose.override.yml
+
+
+### Python ####################################################################
+
+# Byte-compiled / optimized / DLL files
 # PyCharm project files
 .idea/
 
@@ -18,6 +37,21 @@ __pycache__/
 .tox
 dist/
 build/
+
+# Flycheck
+flycheck_*.el
+
+# server auth directory
+/server/
+
+# projectiles files
+.projectile
+
+# directory configuration
+.dir-locals.el
+
+# network security
+/network-security.data
 
 # Operating System files
 .DS_Store # macOS
