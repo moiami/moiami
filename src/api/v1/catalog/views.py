@@ -1,5 +1,7 @@
 from django.http import HttpRequest, JsonResponse
+
 from services.catalog import Catalog
+
 
 def get_all_movies(request: HttpRequest) -> JsonResponse:
     movies = Catalog.get_all_movies()

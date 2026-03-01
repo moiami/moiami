@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from services.catalog import Catalog
 
 
