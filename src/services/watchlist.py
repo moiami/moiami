@@ -1,7 +1,7 @@
 import uuid
 
 from apps.catalog.models import Movie
-from apps.users.models import User
+from apps.users.models import UserProfile
 from apps.watchlist.models import WatchList
 
 
@@ -9,20 +9,20 @@ class Watchlist:
     @staticmethod
     def create_watchlist(
         name: str,
-        user: User,
+        user_profile: UserProfile,
     ) -> WatchList:
         watchlist = WatchList.objects.create(name=name)
 
-        user.watchlists.add(watchlist)
+        user_profile.watchlists.add(watchlist)
 
         return watchlist
 
     @staticmethod
     def delete_watchlist(
         watchlist_id: uuid.UUID,
-        user: User,
+        user_profile: UserProfile,
     ) -> bool:
-        deleted_count, _ = user.watchlists.filter(id=watchlist_id).delete()
+        deleted_count, _ = user_profile.watchlists.filter(id=watchlist_id).delete()
 
         return bool(deleted_count)
 
@@ -30,9 +30,9 @@ class Watchlist:
     def add_movie_to_watchlist(
         watchlist_id: uuid.UUID,
         movie_id: uuid.UUID,
-        user: User,
+        user_profile: UserProfile,
     ) -> None:
-        watchlist = user.watchlists.get(id=watchlist_id)
+        watchlist = user_profile.watchlists.get(id=watchlist_id)
         movie = Movie.objects.get(id=movie_id)
 
         watchlist.movies.add(movie)

@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'apps.actions',
     'apps.catalog',
     'apps.subscription',
-    'apps.users',
+    'apps.users.apps.UsersConfig',
     'apps.watchlist',
 ]
 
@@ -122,3 +122,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+LOGIN_REDIRECT_URL = '/api/v1/watchlists/all'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

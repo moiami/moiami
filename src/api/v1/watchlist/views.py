@@ -9,8 +9,13 @@ from django.views.decorators.http import (
     require_POST,
 )
 
+from apps.users.models import UserProfile
 from domain.errors.invalid_json import invalid_json_error
 from services.watchlist import Watchlist
+
+
+def _get_user_profile(request: HttpRequest) -> UserProfile:
+    return UserProfile.objects.get(user=request.user)
 
 
 @require_POST
@@ -28,7 +33,7 @@ def create_watchlist(request: HttpRequest) -> JsonResponse:
 
     watchlist = Watchlist.create_watchlist(
         name=name.strip(),
-        user=request.user,
+        user_profile=_get_user_profile(request),
     )
 
     return JsonResponse({'id': str(watchlist.id)}, status=201)
@@ -47,7 +52,7 @@ def get_all_watchlists(request: HttpRequest) -> JsonResponse:
 def delete_watchlist(request: HttpRequest, watchlist_id: uuid.UUID) -> HttpResponse:
     is_deleted = Watchlist.delete_watchlist(
         watchlist_id=watchlist_id,
-        user=request.user,
+        user_profile=_get_user_profile(request),
     )
 
     if not is_deleted:

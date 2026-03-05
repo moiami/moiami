@@ -1,15 +1,24 @@
+from django.contrib.auth.models import User as AuthUser
 from django.db import models
-from django.db.models import DateTimeField, ManyToManyField
+from django.db.models import (
+    ManyToManyField,
+    OneToOneField,
+)
 
 from apps.watchlist.models import WatchList
 
-# Create your models here
 
-class User(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = DateTimeField("date published")
+class UserProfile(models.Model):
+    user = OneToOneField(
+        AuthUser,
+        on_delete=models.CASCADE,
+        related_name='profile',
+    )
     watchlists = ManyToManyField(
         WatchList,
-        related_name='users',
+        related_name='profiles',
         blank=True,
     )
+
+    def __str__(self) -> str:
+        return self.user.username
