@@ -47,6 +47,6 @@ class SubscribeSerializer(serializers.Serializer):
 
 class UsersWithSubscriptionSerializer(serializers.Serializer):
     id = serializers.UUIDField()
-    name = serializers.CharField()
-    is_admin = serializers.BooleanField()
+    name = serializers.CharField(max_length=100)
+    is_admin = serializers.BooleanField(default=False)
     subscription_expires_at = serializers.DateTimeField()

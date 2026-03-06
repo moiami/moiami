@@ -36,17 +36,10 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
         Получение детальной информации по подписке
         GET /api/v1/subscriptions/{id}/
         """
-        try:
-            subscription = self.get_object()
-            serializer = self.get_serializer(subscription)
+        subscription = self.get_object()
+        serializer = self.get_serializer(subscription)
 
-            return Response(serializer.data)
-
-        except Exception as e:
-            return Response(
-                {"error": "Подписка не найдена"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        return Response(serializer.data)
 
 
 class UserSubscriptionViewSet(viewsets.GenericViewSet):
@@ -72,25 +65,18 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            result = subscriptions_service.subscribe_user(
-                user_id=request.user.id,
-                subsciption_id=serializer.validated_data["subscription_id"],
-            )
+        result = subscriptions_service.subscribe_user(
+            user_id=request.user.id,
+            subscription_id=serializer.validated_data["subscription_id"],
+        )
 
-            return Response(
-                {
-                    "message": "Подписка успешно оформлена",
-                    "user_subscription": result,
-                },
-                status=status.HTTP_201_CREATED
-            )
-
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        return Response(
+            {
+                "message": "Подписка успешно оформлена",
+                "user_subscription": result,
+            },
+            status=status.HTTP_201_CREATED
+        )
 
     @action(detail=False, methods=["get"], url_path="check/{subscription_id}")
     def check_subscription(self, request, subscription_id=None):
@@ -100,52 +86,40 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
         """
         if not subscription_id:
             return Response(
-                {"error": "subscription_id is required"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        try:
-            result = subscriptions_service.check_subscription(
-                user_id=request
-            )
-
-            return Response(
-                {
-                    "user_id": request.user.id,
-                    "subscription_id": subscription_id,
-                    "has_subscription": result,
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
+                {"error": "subscription id is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        result = subscriptions_service.check_subscription(
+            user_id=request.user.id,
+            subsciption_id=subscription_id,
+        )
+
+        return Response(
+            {
+                "user_id": request.user.id,
+                "subscription_id": subscription_id,
+                "has_subscription": result,
+            },
+            status=status.HTTP_200_OK,
+        )
+
     @action(detail=True, methods=["get"], url_path="users")
-    def get_users_with_subscription(self, request, subscription_id=None):
+    def get_users_with_subscription(self, request, pk=None):
         """
         Получение всех пользователей с определённой подпиской
         GET /api/v1/user-subscriptions/{subscription_id}/users/
         """
-        try:
-            result = subscriptions_service.get_users_with_subscription(
-                subscription_id
-            )
-            serializer = UsersWithSubscriptionSerializer(result, many=True)
+        result = subscriptions_service.get_users_with_subscription(
+            subscription_id=pk
+        )
+        serializer = UsersWithSubscriptionSerializer(result, many=True)
 
-            return Response(
-                {
-                    "subscription_id": subscription_id,
-                    "users_count": len(result),
-                    "users": serializer.data,
-                },
-                status=status.HTTP_200_OK,
-            )
-
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        return Response(
+            {
+                "subscription_id": pk,
+                "users_count": len(result),
+                "users": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )

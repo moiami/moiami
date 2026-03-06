@@ -122,6 +122,7 @@ USE_TZ = True
 REST_FRAMEWORK = {
     # Схема для автоматической генерации API-документации
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'api.common.exceptions.exception_handler'
 }
 
 # Настройки для drf-spectacular
