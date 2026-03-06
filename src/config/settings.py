@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'drf_spectacular',
     'apps.actions',
     'apps.catalog',
     'apps.subscription',
@@ -117,6 +119,23 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+# DRF API
+
+# Настройки для Django REST Framework
+REST_FRAMEWORK = {
+    # Схема для автоматической генерации API-документации
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Настройки для drf-spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'User Management API',
+    'DESCRIPTION': 'API для регистрации, получения и удаления пользователей.',
+    'VERSION': '1.0.0',
+    # Отключение схемы в ответах API
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
