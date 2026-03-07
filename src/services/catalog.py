@@ -2,7 +2,7 @@ import uuid
 
 from django.db.models import QuerySet
 
-from apps.catalog.models import Movie,Genre,Video
+from apps.catalog.models import Movie,Genre,Video,Image
 
 def get_movie(movie_id: uuid.UUID | str) -> Movie:
     return Movie.objects.get(id=movie_id)
@@ -17,10 +17,13 @@ def get_ganre_by_movie_id(movie_id: uuid.UUID | str) -> Genre:
     pass
 
 def get_all_genre() -> QuerySet[Genre]:
-    pass
+    return Genre.objects.all()
 
 def get_all_videos() -> QuerySet[Video]:
-    pass
+    return Video.objects.all()
 
 def get_all_images() -> QuerySet[Movie]:
+    return Image.objects.all()
+
+def get_movie_by_subscription_id(subscription_id: uuid.UUID | str) ->QuerySet[Movie]:
     pass

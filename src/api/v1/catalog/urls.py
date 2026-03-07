@@ -11,12 +11,6 @@ router.register(
 )
 
 router.register(
-    r'genres-movies',
-    views.GenreMovieViewSet,
-    basename='genres-movie'
-)
-
-router.register(
     r'genres',
     views.GenreViewSet,
     basename='genre'
@@ -33,12 +27,6 @@ router.register(
     views.VideoViewSet,
     basename='video'
 )
-
-# GET /subscriptions/
-# GET /subscriptions/{id}/
-# GET /subscriptions/{id}/users/
-# GET /user-subscriptions/check/{subscription_id}/
-# POST /user-subscriptions/add/
 
 urlpatterns = [
     path('', include(router.urls)),
