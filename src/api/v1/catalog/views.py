@@ -121,7 +121,6 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         """
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
@@ -142,7 +141,10 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         Получить все жанры для конкретного фильма
         GET /api/v1/catalog/movies/{movie_id}/genres/
         """
-        return Response(GenreListSerializer(catalog_service.get_ganre_by_movie_id(id), many=True).data)
+        try:
+            return Response(GenreListSerializer(catalog_service.get_ganre_by_movie_id(id), many=True).data)
+        except Exception:
+            return Response({"error": "..."},status=status.HTTP_404_NOT_FOUND,)
 
     @action(detail=False,methods=['get'],url_path='subscriptions/<int:subscription_id>')
     def by_subscription(self, request, subscription_id):
@@ -150,4 +152,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         Получить все фильмы по ID подписки
         GET /api/v1/catalog/movies/subscriptions/{subscription_id}/
         """
-        return Response(MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)
+        try:
+            return Response(MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)
+        except Exception:
+            return Response({"error": "..."},status=status.HTTP_404_NOT_FOUND,)
