@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'drf_spectacular',
     'apps.actions',
@@ -126,6 +127,7 @@ USE_TZ = True
 REST_FRAMEWORK = {
     # Схема для автоматической генерации API-документации
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
 }
 
 # Настройки для drf-spectacular
