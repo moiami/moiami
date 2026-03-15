@@ -1,61 +1,47 @@
-import json
-import uuid
+from rest_framework import status, viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.views.decorators.http import (
-    require_GET,
-    require_http_methods,
-    require_POST,
+from api.v1.watchlist.serializers import (
+    WatchListListSerializer,
+    WatchListSerializer,
 )
-
 from apps.users.models import UserProfile
-from domain.errors.invalid_json import invalid_json_error
 from services.watchlist import Watchlist
 
 
-def _get_user_profile(request: HttpRequest) -> UserProfile:
-    return UserProfile.objects.get(user=request.user)
+class WatchListViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
 
+    def _get_user_profile(self) -> UserProfile:
+        return UserProfile.objects.get(user=self.request.user)
 
-@require_POST
-@login_required
-def create_watchlist(request: HttpRequest) -> JsonResponse:
-    try:
-        payload = json.loads(request.body)
-    except json.JSONDecodeError:
-        return invalid_json_error()
+    def get_queryset(self):
+        return Watchlist.get_all_watchlists(self._get_user_profile())
 
-    name = payload.get('name')
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return WatchListListSerializer
+        return WatchListSerializer
 
-    if name is None or len(name.strip()) == 0:
-        return JsonResponse({'description': 'Field `name` is required.'}, status=400)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
 
-    watchlist = Watchlist.create_watchlist(
-        name=name.strip(),
-        user_profile=_get_user_profile(request),
-    )
+        return Response({'watchlists': serializer.data}, status=status.HTTP_200_OK)
 
-    return JsonResponse({'id': str(watchlist.id)}, status=201)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
+        watchlist = Watchlist.create_watchlist(
+            name=serializer.validated_data['name'],
+            user_profile=self._get_user_profile(),
+        )
+        response_serializer = WatchListSerializer(watchlist)
 
-@require_GET
-def get_all_watchlists(request: HttpRequest) -> JsonResponse:
-    watchlist_ids = Watchlist.get_all_ids()
-    data = {'watchlists': [{'id': str(watchlist_id)} for watchlist_id in watchlist_ids]}
-
-    return JsonResponse(data, status=200)
-
-
-@require_http_methods(['DELETE'])
-@login_required
-def delete_watchlist(request: HttpRequest, watchlist_id: uuid.UUID) -> HttpResponse:
-    is_deleted = Watchlist.delete_watchlist(
-        watchlist_id=watchlist_id,
-        user_profile=_get_user_profile(request),
-    )
-
-    if not is_deleted:
-        return JsonResponse({'description': 'Watchlist not found'}, status=404)
-
-    return HttpResponse(status=204)
+        return Response(
+            response_serializer.data,
+            status=status.HTTP_201_CREATED,
+        )

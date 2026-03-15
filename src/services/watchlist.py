@@ -1,5 +1,7 @@
 import uuid
 
+from django.db.models import QuerySet
+
 from apps.catalog.models import Movie
 from apps.users.models import UserProfile
 from apps.watchlist.models import WatchList
@@ -40,6 +42,10 @@ class Watchlist:
     @staticmethod
     def get_all_ids() -> list[uuid.UUID]:
         return list(WatchList.objects.all().values_list('id', flat=True))
+
+    @staticmethod
+    def get_all_watchlists(user_profile: UserProfile) -> QuerySet[WatchList]:
+        return user_profile.watchlists.all().prefetch_related('movies')
 
     @staticmethod
     def get_watchlist(
