@@ -11,6 +11,13 @@ class WatchListMovieSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'name']
 
 
+class WatchListAddMovieSerializer(serializers.Serializer):
+    movie_id = serializers.PrimaryKeyRelatedField(
+        queryset=Movie.objects.all(),
+        source='movie',
+    )
+
+
 class WatchListListSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         trim_whitespace=True
