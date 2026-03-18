@@ -45,7 +45,7 @@ class Watchlist:
 
     @staticmethod
     def get_all_watchlists(user_profile: UserProfile) -> QuerySet[WatchList]:
-        return user_profile.watchlists.all().prefetch_related('movies')
+        return user_profile.watchlists.order_by('id').prefetch_related('movies')
 
     @staticmethod
     def get_watchlist(

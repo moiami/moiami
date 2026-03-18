@@ -36,6 +36,20 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
         GET /api/v1/watchlists
         """
         queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+
+            return Response(
+                {
+                    'count': self.paginator.count,
+                    'next': self.paginator.get_next_link(),
+                    'previous': self.paginator.get_previous_link(),
+                    'watchlists': serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+
         serializer = self.get_serializer(queryset, many=True)
 
         return Response({'watchlists': serializer.data}, status=status.HTTP_200_OK)

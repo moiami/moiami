@@ -127,4 +127,9 @@ STATIC_URL = 'static/'
 LOGIN_REDIRECT_URL = '/api/v1/watchlists/all'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+}
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
