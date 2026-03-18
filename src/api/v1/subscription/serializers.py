@@ -36,17 +36,12 @@ class SubscribeSerializer(serializers.Serializer):
     subscription_id = serializers.IntegerField()
 
     def validate_subscription_id(self, value):
-        try:
-            subscription = Subscription.objects.get(id=value)
-
-        except Subscription.DoesNotExist:
+        if not Subscription.objects.filter(id=value).exists():
             raise serializers.ValidationError("Subscription not found")
-
-        return subscription
+        return value
 
 
 class UsersWithSubscriptionSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField(max_length=100)
-    is_admin = serializers.BooleanField(default=False)
     subscription_expires_at = serializers.DateTimeField()

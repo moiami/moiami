@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from datetime import timedelta
+from typing import Any
 
 from apps.subscription.models import Subscription, UserSubscription
 from domain.exceptions import SubscriptionNotFound
@@ -62,5 +63,32 @@ def subscribe_user(user_id: int, subscription_id: int) -> UserSubscription:
     return user_subscription
 
 
-def get_users_with_subscription(subscription_id: int):
-    pass
+def check_subscription(user_id: int, subscription_id: int) -> bool:
+    get_subscription(subscription_id)
+
+    return UserSubscription.objects.filter(
+        user_id=user_id,
+        subscription_id=subscription_id,
+        expired_at__gt=timezone.now(),
+    ).exists()
+
+
+def get_users_with_subscription(subscription_id: int) -> list[dict[str, Any]]:
+    get_subscription(subscription_id)
+
+    user_subscriptions = (
+        UserSubscription.objects
+        .select_related("user")
+        .filter(subscription_id=subscription_id)
+        .order_by("expired_at")
+    )
+
+    return [_map_user_subscription(item) for item in user_subscriptions]
+
+
+def _map_user_subscription(user_subscription: UserSubscription) -> dict[str, Any]:
+    return {
+        "id": user_subscription.user.id,
+        "name": user_subscription.user.name,
+        "subscription_expires_at": user_subscription.expired_at,
+    }
