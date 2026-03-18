@@ -69,11 +69,12 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
             user_id=request.user.id,
             subscription_id=serializer.validated_data["subscription_id"],
         )
+        result_data = UserSubscriptionSerializer(result).data
 
         return Response(
             {
                 "message": "Подписка успешно оформлена",
-                "user_subscription": result,
+                "user_subscription": result_data,
             },
             status=status.HTTP_201_CREATED
         )
