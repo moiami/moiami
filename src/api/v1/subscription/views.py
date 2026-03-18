@@ -92,7 +92,7 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
 
         result = subscriptions_service.check_subscription(
             user_id=request.user.id,
-            subsciption_id=subscription_id,
+            subscription_id=subscription_id,
         )
 
         return Response(
