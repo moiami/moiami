@@ -3,7 +3,6 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from apps.catalog.models import Movie, Video, Image, Genre
 from services import catalog as catalog_service
 from api.v1.catalog.serializers import MovieListSerializer,MovieSerializer,GenreListSerializer,GenreSerializer,ImageListSerializer,ImageSerializer,VideoListSerializer,VideoSerializer
 import django_filters.rest_framework
@@ -13,7 +12,7 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    queryset = Genre.objects.all()
+    queryset = catalog_service.get_all_genre()
 
     def get_queryset(self):
         return catalog_service.get_all_genre()
@@ -50,7 +49,7 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    queryset = Image.objects.all()
+    queryset = catalog_service.get_all_images()
 
     def get_queryset(self):
         return catalog_service.get_all_images()
@@ -79,7 +78,7 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    queryset = Video.objects.all()
+    queryset = catalog_service.get_all_videos()
 
     def get_queryset(self):
         return catalog_service.get_all_videos()
@@ -109,7 +108,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields =  ['director','script_writer','age_restriction','date','date_of_premiere','country','genres']
-    queryset = Movie.objects.all()
+    queryset = catalog_service.get_all_movies()
 
     def get_queryset(self):
         return catalog_service.get_all_movies()
@@ -149,7 +148,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             return Response(GenreListSerializer(catalog_service.get_ganre_by_movie_id(id), many=True).data)
         except Exception:
-            return Response({"error": "..."},status=status.HTTP_404_NOT_FOUND,)
+            return Response({"error": "Ничего не найдено"},status=status.HTTP_404_NOT_FOUND,)
 
     @action(detail=False,methods=['get'],url_path='subscriptions/<int:subscription_id>')
     def by_subscription(self, request, subscription_id):
@@ -160,4 +159,4 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             return Response(MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)
         except Exception:
-            return Response({"error": "..."},status=status.HTTP_404_NOT_FOUND,)
+            return Response({"error": "Ничего не найдено"},status=status.HTTP_404_NOT_FOUND,)
