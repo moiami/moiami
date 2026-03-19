@@ -3,8 +3,9 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from apps.catalog.models import Movie, Video, Image, Genre
 from services import catalog as catalog_service
-from api.v1.catalog.serializers import MovieListSerializer,MovieSerializer,GenreMovieSerializer,GenreListSerializer,GenreSerializer,ImageListSerializer,ImageSerializer,VideoListSerializer,VideoSerializer
+from api.v1.catalog.serializers import MovieListSerializer,MovieSerializer,GenreListSerializer,GenreSerializer,ImageListSerializer,ImageSerializer,VideoListSerializer,VideoSerializer
 import django_filters.rest_framework
 
 class GenreViewSet(viewsets.ReadOnlyModelViewSet):
@@ -12,6 +13,7 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
+    queryset = Genre.objects.all()
 
     def get_queryset(self):
         return catalog_service.get_all_genre()
@@ -48,6 +50,7 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
+    queryset = Image.objects.all()
 
     def get_queryset(self):
         return catalog_service.get_all_images()
@@ -76,6 +79,7 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
+    queryset = Video.objects.all()
 
     def get_queryset(self):
         return catalog_service.get_all_videos()
@@ -105,6 +109,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields =  ['director','script_writer','age_restriction','date','date_of_premiere','country','genres']
+    queryset = Movie.objects.all()
 
     def get_queryset(self):
         return catalog_service.get_all_movies()
