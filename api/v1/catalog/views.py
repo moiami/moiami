@@ -1,8 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+
+from domain.exeptions import NotFoundMoviesBySubscriptionId, NotFoundGenresByMovieId, NotFoundMovie, NotFoundVideo, \
+    NotFoundImage, NotFoundGenre
 from services import catalog as catalog_service
 from api.v1.catalog.serializers import MovieListSerializer,MovieSerializer,GenreListSerializer,GenreSerializer,ImageListSerializer,ImageSerializer,VideoListSerializer,VideoSerializer
 import django_filters.rest_framework
@@ -27,11 +30,12 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
         Получение списка жанров
         GET /api/v1/catalog/genres/
         """
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data)
-
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception:
+            raise NotFoundGenre()
     def retrieve(self, request, *args, **kwargs):
         """
         Получение информации по жанру
@@ -42,7 +46,7 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
             serializer = self.get_serializer(movie)
             return Response(serializer.data)
         except Exception:
-            return Response({"error": "Жанр не найден"},status=status.HTTP_404_NOT_FOUND,)
+            raise NotFoundGenre()
 
 class ImageViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для обложек"""
@@ -60,10 +64,12 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
         return ImageSerializer
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data)
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception:
+            raise NotFoundImage()
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -71,7 +77,7 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
             serializer = self.get_serializer(movie)
             return Response(serializer.data)
         except Exception:
-            return Response({"error": "Обложка не найдена"},status=status.HTTP_404_NOT_FOUND,)
+            raise NotFoundImage()
 
 class VideoViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для видео"""
@@ -89,10 +95,12 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
         return VideoSerializer
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data)
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception:
+            raise NotFoundVideo()
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -100,7 +108,7 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
             serializer = self.get_serializer(movie)
             return Response(serializer.data)
         except Exception:
-            return Response({"error": "Видео не найдено"},status=status.HTTP_404_NOT_FOUND,)
+            raise NotFoundVideo()
 
 class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для фильмов"""
@@ -123,9 +131,12 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         Получение списка фильмов
         GET /api/v1/catalog/movies/
         """
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception:
+            raise NotFoundMovie()
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -137,7 +148,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
             serializer = self.get_serializer(movie)
             return Response(serializer.data)
         except Exception:
-            return Response({"error": "Фильм не найден"},status=status.HTTP_404_NOT_FOUND,)
+            raise NotFoundMovie()
 
     @action(detail=True, methods=['get'], url_path='genres')
     def genres(self, request, pk):
@@ -148,7 +159,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             return Response(GenreListSerializer(catalog_service.get_ganre_by_movie_id(id), many=True).data)
         except Exception:
-            return Response({"error": "Ничего не найдено"},status=status.HTTP_404_NOT_FOUND,)
+            raise NotFoundGenresByMovieId()
 
     @action(detail=False,methods=['get'],url_path='subscriptions/<int:subscription_id>')
     def by_subscription(self, request, subscription_id):
@@ -159,4 +170,4 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             return Response(MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)
         except Exception:
-            return Response({"error": "Ничего не найдено"},status=status.HTTP_404_NOT_FOUND,)
+            raise NotFoundMoviesBySubscriptionId()
