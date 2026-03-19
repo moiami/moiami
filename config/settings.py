@@ -121,15 +121,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-# DRF API
-
-# Настройки для Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
+    'DEFAULT_PAGINATION_CLASS': 'domain.pagination.StandardResultsSetPagination',
 }
 
-# Настройки для drf-spectacular
 SPECTACULAR_SETTINGS = {
     'TITLE': 'User Management API',
     'DESCRIPTION': 'API для регистрации, получения и удаления пользователей.',
