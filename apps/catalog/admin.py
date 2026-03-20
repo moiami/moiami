@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.catalog.models import Genre, Video, Image, Movie
+from apps.catalog.models import Genre, Image, Movie, Video
 
 admin.site.register(Genre)
 admin.site.register(Video)

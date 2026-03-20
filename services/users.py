@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 from apps.subscription.models import UserSubscription
 from apps.watchlist.models import WatchList
 
+
 def get_users() -> QuerySet[User]:
     return User.objects.prefetch_related(
         'profile__watchlists',
@@ -19,3 +20,5 @@ def get_watchlists(user: User) -> QuerySet[WatchList]:
 
 def create_user(validated_data: dict) -> User:
     return User.objects.create_user(**validated_data)
+
+# TODO: add UserProfile handlers

@@ -1,5 +1,6 @@
 from rest_framework.exceptions import APIException
 
+
 class InternalServer(APIException):
     status_code = 500
     default_detail = 'Ошибка сервера'
@@ -34,5 +35,3 @@ class NotFoundGenre(APIException):
     status_code = 404
     default_detail = 'Жанр не найден'
     default_code = 'Жанр не найден'
-
-

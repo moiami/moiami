@@ -43,9 +43,8 @@ INSTALLED_APPS = [
     'apps.actions',
     'apps.catalog',
     'apps.subscription',
-    'apps.users',
     'apps.watchlist',
-
+    'apps.users'
 ]
 
 MIDDLEWARE = [
@@ -139,6 +138,8 @@ SPECTACULAR_SETTINGS = {
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # add this block anywhere after the existing settings
 REST_FRAMEWORK = {

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from apps.catalog.models import Movie,Image,Genre,Video
+from apps.catalog.models import Genre, Image, Movie, Video
+
 
 class GenreListSerializer(serializers.ModelSerializer):
     class Meta:

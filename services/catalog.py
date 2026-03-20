@@ -2,7 +2,8 @@ import uuid
 
 from django.db.models import QuerySet
 
-from apps.catalog.models import Movie, Genre, Video, Image
+from apps.catalog.models import Genre, Image, Movie, Video
+
 
 def get_movie(movie_id: uuid.UUID | str) -> Movie:
     return Movie.objects.get(id=movie_id)

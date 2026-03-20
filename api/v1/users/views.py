@@ -9,8 +9,7 @@ from api.v1.users.serializers import (
     UserSubscriptionSerializer,
     WatchListSerializer,
 )
-
-from services.users import get_users, get_subscriptions, get_watchlists
+from services.users import get_subscriptions, get_users, get_watchlists
 
 
 # Set of views
@@ -21,7 +20,7 @@ class UserViewSet(
     viewsets.GenericViewSet,    # About mixins: we could use single inheritance from "viewsets.ModelViewSet", which gives all the CRUD, but we don't need U and D, so we use separate mixins.
 ):
     queryset = get_users()
-    
+
     """
     The following 3 lines gives our endpoint 2 query params:
     GET /api/v1/users/?search=slava - filters by username or email containing "john"

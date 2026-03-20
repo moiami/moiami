@@ -1,17 +1,17 @@
 import uuid
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.watchlist.models import WatchList
-from apps.subscription.models import UserSubscription
 
 
 class UserProfile(models.Model):
     """Extends Django's built-in User with app-specific fields."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile') # models.CASCADE => if User object is deleted, UserProfile object will be deleted, too. UserProfile has no meaning without its user. 
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile') # models.CASCADE => if User object is deleted, UserProfile object will be deleted, too. UserProfile has no meaning without its user.
     watchlists = models.ManyToManyField(WatchList, related_name='user_profiles', blank=True)
 
     class Meta:

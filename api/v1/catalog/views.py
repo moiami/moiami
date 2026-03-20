@@ -1,14 +1,30 @@
+import django_filters.rest_framework
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
-from domain.exeptions import NotFoundMoviesBySubscriptionId, NotFoundGenresByMovieId, NotFoundMovie, NotFoundVideo, \
-    NotFoundImage, NotFoundGenre
+from api.v1.catalog.serializers import (
+    GenreListSerializer,
+    GenreSerializer,
+    ImageListSerializer,
+    ImageSerializer,
+    MovieListSerializer,
+    MovieSerializer,
+    VideoListSerializer,
+    VideoSerializer,
+)
+from domain.exeptions import (
+    NotFoundGenre,
+    NotFoundGenresByMovieId,
+    NotFoundImage,
+    NotFoundMovie,
+    NotFoundMoviesBySubscriptionId,
+    NotFoundVideo,
+)
 from services import catalog as catalog_service
-from api.v1.catalog.serializers import MovieListSerializer,MovieSerializer,GenreListSerializer,GenreSerializer,ImageListSerializer,ImageSerializer,VideoListSerializer,VideoSerializer
-import django_filters.rest_framework
+
 
 class GenreViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для жанров"""

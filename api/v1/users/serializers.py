@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from apps.subscription.models import UserSubscription
 from apps.watchlist.models import WatchList
-
 from services.users import create_user
 
 
