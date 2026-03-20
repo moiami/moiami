@@ -43,9 +43,8 @@ INSTALLED_APPS = [
     'apps.actions',
     'apps.catalog',
     'apps.subscription',
-    'apps.users.apps.UsersConfig',
     'apps.watchlist',
-
+    'apps.users'
 ]
 
 MIDDLEWARE = [
