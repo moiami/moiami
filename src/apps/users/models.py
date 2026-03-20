@@ -1,27 +1,31 @@
 import uuid
+from django.contrib.auth.models import User
 from django.db import models
-from watchlist.models import WatchList 
-from subscription.models import UserSubscription
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-from django.db.models import (
-    CASCADE,
-    CharField,
-    DateField,
-    IntegerField,
-    ManyToManyField,
-    OneToOneField,
-    TextField,
-    URLField,
-    UUIDField,
-)
+from apps.watchlist.models import WatchList
+from apps.subscription.models import UserSubscription
 
-class User(models.Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4)
-    name = models.CharField(max_length=26)
-    password = models.CharField(max_length=128)  # Django hashes are typically 128 chars
-    isAdmin = models.BooleanField(default=False)
-    watchlists = ManyToManyField(WatchList, related_name='watchlists', blank=True)
-    subscriptions = ManyToManyField(UserSubscription, related_name='subscriptions', blank=True)
+
+class UserProfile(models.Model):
+    """Extends Django's built-in User with app-specific fields."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile') # models.CASCADE => if User object is deleted, UserProfile object will be deleted, too. UserProfile has no meaning without its user. 
+    watchlists = models.ManyToManyField(WatchList, related_name='user_profiles', blank=True)
+
+    class Meta:
+        verbose_name = 'User Profile'
+        verbose_name_plural = 'User Profiles'
 
     def __str__(self):
-        return str(self.name) + str(self.id)
+        return f"Profile({self.user.username})"
+
+
+@receiver(post_save, sender=User)   # only call this function when the sender is User, and only after it's saved (created)
+def create_user_profile(sender, instance, created, **kwargs):
+    """On new User creation: make a UserProfile + one default WatchList."""
+    if created:
+        profile = UserProfile.objects.create(user=instance)
+        default_watchlist = WatchList.objects.create(name=f"{instance.username}'s Watchlist")
+        profile.watchlists.add(default_watchlist)
