@@ -79,7 +79,7 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
             status=status.HTTP_201_CREATED
         )
 
-    @action(detail=False, methods=["get"], url_path="check/{subscription_id}")
+    @action(detail=False, methods=["get"], url_path="check/(?P<subscription_id>[^/.]+)")
     def check_subscription(self, request, subscription_id=None):
         """
         Проверка наличия определённой подписки у пользователя
