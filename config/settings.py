@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
+    'drf_spectacular',
     'apps.actions',
     'apps.catalog',
     'apps.subscription',
-    'apps.users',
     'apps.watchlist',
+    'apps.users'
 ]
 
 MIDDLEWARE = [
@@ -80,11 +82,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '1234',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -118,19 +123,17 @@ USE_TZ = True
 
 # DRF API
 
-# Настройки для Django REST Framework
 REST_FRAMEWORK = {
-    # Схема для автоматической генерации API-документации
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'EXCEPTION_HANDLER': 'api.common.exceptions.exception_handler'
+    'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
+    'DEFAULT_PAGINATION_CLASS': 'domain.pagination.StandardResultsSetPagination',
+    'EXCEPTION_HANDLER': 'api.common.exceptions.exception_handler',
 }
 
-# Настройки для drf-spectacular
 SPECTACULAR_SETTINGS = {
     'TITLE': 'User Management API',
     'DESCRIPTION': 'API для регистрации, получения и удаления пользователей.',
     'VERSION': '1.0.0',
-    # Отключение схемы в ответах API
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
@@ -138,3 +141,5 @@ SPECTACULAR_SETTINGS = {
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
