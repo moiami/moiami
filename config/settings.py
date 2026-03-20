@@ -121,10 +121,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+# DRF API
+
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
     'DEFAULT_PAGINATION_CLASS': 'domain.pagination.StandardResultsSetPagination',
+    'EXCEPTION_HANDLER': 'api.common.exceptions.exception_handler',
 }
 
 SPECTACULAR_SETTINGS = {
@@ -140,9 +143,3 @@ SPECTACULAR_SETTINGS = {
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# add this block anywhere after the existing settings
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-}
