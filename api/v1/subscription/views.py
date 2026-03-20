@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import (
     SubscriptionSerializer, SubscriptionListSerializer,
     SubscribeSerializer, UserSubscriptionSerializer, UsersWithSubscriptionSerializer)
-from src.services import subscriptions as subscriptions_service
+from services import subscriptions as subscriptions_service
 
 
 class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
