@@ -15,7 +15,7 @@ from api.v1.catalog.serializers import (
     VideoListSerializer,
     VideoSerializer,
 )
-from domain.exeptions import (
+from domain.ApiExceptions import (
     NotFoundGenre,
     NotFoundGenresByMovieId,
     NotFoundImage,
