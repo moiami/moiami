@@ -47,8 +47,8 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
         Получение информации по жанру
         GET /api/v1/catalog/genres/{id}/
         """
-        movie = self.get_object()
-        serializer = self.get_serializer(movie)
+        genre = self.get_object()
+        serializer = self.get_serializer(genre)
         return Response(serializer.data)
 
 
@@ -73,8 +73,8 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        movie = self.get_object()
-        serializer = self.get_serializer(movie)
+        image = self.get_object()
+        serializer = self.get_serializer(image)
         return Response(serializer.data)
 
 
@@ -99,8 +99,8 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        movie = self.get_object()
-        serializer = self.get_serializer(movie)
+        video = self.get_object()
+        serializer = self.get_serializer(video)
         return Response(serializer.data)
 
 
