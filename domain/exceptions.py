@@ -13,3 +13,27 @@ class SubscriptionExpired(DomainException):
 
 class PermissionDenied(DomainException):
     pass
+
+
+class NotFoundMoviesBySubscriptionId(DomainException):
+    pass
+
+
+class NotFoundGenresByMovieId(DomainException):
+    pass
+
+
+class NotFoundMovie(DomainException):
+    pass
+
+
+class NotFoundVideo(DomainException):
+    pass
+
+
+class NotFoundImage(DomainException):
+    pass
+
+
+class NotFoundGenre(DomainException):
+    pass
