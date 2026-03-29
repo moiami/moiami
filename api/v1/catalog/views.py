@@ -1,4 +1,3 @@
-import django_filters.rest_framework
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -15,14 +14,7 @@ from api.v1.catalog.serializers import (
     VideoListSerializer,
     VideoSerializer,
 )
-from domain.ApiExceptions import (
-    NotFoundGenre,
-    NotFoundGenresByMovieId,
-    NotFoundImage,
-    NotFoundMovie,
-    NotFoundMoviesBySubscriptionId,
-    NotFoundVideo,
-)
+
 from services import catalog as catalog_service
 
 
@@ -46,23 +38,19 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
         Получение списка жанров
         GET /api/v1/catalog/genres/
         """
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundGenre()
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def retrieve(self, request, *args, **kwargs):
         """
         Получение информации по жанру
         GET /api/v1/catalog/genres/{id}/
         """
-        try:
-            movie = self.get_object()
-            serializer = self.get_serializer(movie)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundGenre()
+        movie = self.get_object()
+        serializer = self.get_serializer(movie)
+        return Response(serializer.data)
+
 
 class ImageViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для обложек"""
@@ -80,20 +68,15 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
         return ImageSerializer
 
     def list(self, request, *args, **kwargs):
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundImage()
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        try:
-            movie = self.get_object()
-            serializer = self.get_serializer(movie)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundImage()
+        movie = self.get_object()
+        serializer = self.get_serializer(movie)
+        return Response(serializer.data)
+
 
 class VideoViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для видео"""
@@ -111,27 +94,22 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
         return VideoSerializer
 
     def list(self, request, *args, **kwargs):
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundVideo()
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        try:
-            movie = self.get_object()
-            serializer = self.get_serializer(movie)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundVideo()
+        movie = self.get_object()
+        serializer = self.get_serializer(movie)
+        return Response(serializer.data)
+
 
 class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для фильмов"""
 
     permission_classes = [AllowAny]
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-    filterset_fields =  ['director','script_writer','age_restriction','date','date_of_premiere','country','genres']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['director', 'script_writer', 'age_restriction', 'date', 'date_of_premiere', 'country', 'genres']
     queryset = catalog_service.get_all_movies()
 
     def get_queryset(self):
@@ -147,24 +125,20 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         Получение списка фильмов
         GET /api/v1/catalog/movies/
         """
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundMovie()
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
     def retrieve(self, request, *args, **kwargs):
         """
         Получение детальной информации по фильму
         GET /api/v1/catalog/movies/{id}/
         """
-        try:
-            movie = self.get_object()
-            serializer = self.get_serializer(movie)
-            return Response(serializer.data)
-        except Exception:
-            raise NotFoundMovie()
+        movie = self.get_object()
+        serializer = self.get_serializer(movie)
+        return Response(serializer.data)
+
 
     @action(detail=True, methods=['get'], url_path='genres')
     def genres(self, request, pk):
@@ -172,18 +146,14 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         Получить все жанры для конкретного фильма
         GET /api/v1/catalog/movies/{movie_id}/genres/
         """
-        try:
-            return Response(GenreListSerializer(catalog_service.get_ganre_by_movie_id(id), many=True).data)
-        except Exception:
-            raise NotFoundGenresByMovieId()
+        return Response(GenreListSerializer(catalog_service.get_genre_by_movie_id(id), many=True).data)
 
-    @action(detail=False,methods=['get'],url_path='subscriptions/<int:subscription_id>')
+
+    @action(detail=False, methods=['get'], url_path='subscriptions/<int:subscription_id>')
     def by_subscription(self, request, subscription_id):
         """
         Получить все фильмы по ID подписки
         GET /api/v1/catalog/movies/subscriptions/{subscription_id}/
         """
-        try:
-            return Response(MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)
-        except Exception:
-            raise NotFoundMoviesBySubscriptionId()
+        return Response(
+            MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)

@@ -8,6 +8,72 @@ from domain import exceptions
 def exception_handler(e, context):
     """Единый формат ошибок для API"""
 
+    if isinstance(e, exceptions.NotFoundMoviesBySubscriptionId):
+        return Response(
+            {
+                "error": {
+                    "code": "movie_not_found",
+                    "message": str(e),
+                }
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if isinstance(e, exceptions.NotFoundGenresByMovieId):
+        return Response(
+            {
+                "error": {
+                    "code": "genres_not_found",
+                    "message": str(e),
+                }
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if isinstance(e, exceptions.NotFoundMovie):
+        return Response(
+            {
+                "error": {
+                    "code": "movie_not_found",
+                    "message": str(e),
+                }
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if isinstance(e, exceptions.NotFoundVideo):
+        return Response(
+            {
+                "error": {
+                    "code": "video_not_found",
+                    "message": str(e),
+                }
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if isinstance(e, exceptions.NotFoundImage):
+        return Response(
+            {
+                "error": {
+                    "code": "image_not_found",
+                    "message": str(e),
+                }
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if isinstance(e, exceptions.NotFoundGenre):
+        return Response(
+            {
+                "error": {
+                    "code": "genre_not_found",
+                    "message": str(e),
+                }
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
     if isinstance(e, exceptions.SubscriptionNotFound):
         return Response(
             {
