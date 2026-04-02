@@ -18,15 +18,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 class UserSubscriptionSerializer(serializers.ModelSerializer):
     subscription = SubscriptionSerializer(read_only=True)
-    user_id = serializers.UUIDField(source='user.id', read_only=True)
-    user_name = serializers.CharField(source='user.name', read_only=True)
 
     class Meta:
         model = UserSubscription
         fields = [
             "id",
             "user_id",
-            "user_name",
             "subscription",
             "expired_at",
         ]
@@ -43,6 +40,5 @@ class SubscribeSerializer(serializers.Serializer):
 
 
 class UsersWithSubscriptionSerializer(serializers.Serializer):
-    id = serializers.UUIDField()
-    name = serializers.CharField(max_length=100)
+    user_id = serializers.UUIDField()
     subscription_expires_at = serializers.DateTimeField()

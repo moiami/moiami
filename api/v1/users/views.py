@@ -28,14 +28,7 @@ class UserViewSet(
     queryset = get_users()
 
     @staticmethod
-    def _parse_subscription_user_id(pk: str) -> int:
-        try:
-            return int(pk)
-        except (TypeError, ValueError) as exc:
-            raise NotFound('User not found') from exc
-
-    @staticmethod
-    def _parse_watchlist_user_id(pk: str) -> UUID:
+    def _parse_user_id(pk: str) -> UUID:
         try:
             return UUID(str(pk))
         except (TypeError, ValueError) as exc:
@@ -75,13 +68,13 @@ class UserViewSet(
     @action(detail=True, methods=['get'], url_path='subscriptions')
     def subscriptions(self, request, pk=None):  # pk - primary key. Usually ID is put in it.
         qs = subscriptions_service.get_user_subscriptions(
-            self._parse_subscription_user_id(pk)
+            self._parse_user_id(pk)
         )
         return Response(UserSubscriptionSerializer(qs, many=True).data)
 
     @action(detail=True, methods=['get'], url_path='watchlists')
     def watchlists(self, request, pk=None):
         qs = WatchlistService.get_all_watchlists(
-            self._parse_watchlist_user_id(pk)
+            self._parse_user_id(pk)
         )
         return Response(WatchListSerializer(qs, many=True).data)

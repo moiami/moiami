@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models
 
 
@@ -15,11 +14,7 @@ class Subscription(models.Model):
 
 
 class UserSubscription(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='subscriptions'
-    )
+    user_id = models.UUIDField(db_index=True)
     subscription = models.ForeignKey(
         Subscription,
         on_delete=models.PROTECT,
@@ -27,5 +22,13 @@ class UserSubscription(models.Model):
     )
     expired_at = models.DateTimeField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user_id', 'subscription'],
+                name='unique_user_subscription',
+            )
+        ]
+
     def __str__(self):
-        return f"{self.user.id} - {self.subscription.name}"
+        return f"{self.user_id} - {self.subscription.name}"

@@ -1,14 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from apps.subscription.models import UserSubscription
 from services.users import create_user
-
-
-class UserSubscriptionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSubscription
-        fields = '__all__'
 
 
 class UserListSerializer(serializers.ModelSerializer):

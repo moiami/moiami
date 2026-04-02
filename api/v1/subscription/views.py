@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from api.common.authentication import HeaderUserAuthentication
 from services import subscriptions as subscriptions_service
 
 from .serializers import (
@@ -51,6 +52,7 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
 class UserSubscriptionViewSet(viewsets.GenericViewSet):
     """Viewset для подписок пользователей"""
 
+    authentication_classes = [HeaderUserAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
