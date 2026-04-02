@@ -1,9 +1,9 @@
+from datetime import timedelta
+from typing import Any
+
 from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
-
-from datetime import timedelta
-from typing import Any
 
 from apps.subscription.models import Subscription, UserSubscription
 from domain.exceptions import SubscriptionNotFound

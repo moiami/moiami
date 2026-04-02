@@ -3,7 +3,10 @@ import uuid
 from django.db.models import QuerySet
 
 from apps.catalog.models import Genre, Image, Movie, Video
-from domain.exceptions import NotFoundMovie, NotFoundGenre, NotFoundGenresByMovieId
+from domain.exceptions import (
+    NotFoundGenresByMovieId,
+    NotFoundMovie,
+)
 
 
 def get_movie(movie_id: uuid.UUID | str) -> Movie:

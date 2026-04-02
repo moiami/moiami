@@ -3,25 +3,23 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from api.common.authentication import HeaderUserAuthentication
 from api.v1.watchlist.serializers import (
     WatchListAddMovieSerializer,
     WatchListListSerializer,
     WatchListSerializer,
 )
-from apps.users.models import UserProfile
 from apps.watchlist.models import WatchList
-from services.watchlist import Watchlist
+from services.watchlist import WatchlistService
 
 
 class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
+    authentication_classes = [HeaderUserAuthentication]
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
 
-    def _get_user_profile(self) -> UserProfile:
-        return UserProfile.objects.get(user=self.request.user)
-
     def get_queryset(self):
-        return Watchlist.get_all_watchlists(self._get_user_profile())
+        return WatchlistService.get_all_watchlists(self.request.user.id)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -63,9 +61,9 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        watchlist = Watchlist.create_watchlist(
+        watchlist = WatchlistService.create_watchlist(
             name=serializer.validated_data['name'],
-            user_profile=self._get_user_profile(),
+            owner_id=self.request.user.id,
         )
         response_serializer = WatchListSerializer(watchlist)
 
@@ -98,10 +96,10 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        Watchlist.add_movie_to_watchlist(
+        WatchlistService.add_movie_to_watchlist(
             watchlist_id=watchlist.id,
             movie_id=serializer.validated_data['movie'].id,
-            user_profile=self._get_user_profile(),
+            owner_id=self.request.user.id,
         )
         watchlist = self.get_queryset().get(id=watchlist.id)
         response_serializer = WatchListSerializer(watchlist)
