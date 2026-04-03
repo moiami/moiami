@@ -5,14 +5,11 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from apps.watchlist.models import WatchList
-
 
 class UserProfile(models.Model):
     """Extends Django's built-in User with app-specific fields."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile') # models.CASCADE => if User object is deleted, UserProfile object will be deleted, too. UserProfile has no meaning without its user.
-    watchlists = models.ManyToManyField(WatchList, related_name='user_profiles', blank=True)
 
     class Meta:
         verbose_name = 'User Profile'
@@ -24,8 +21,6 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)   # only call this function when the sender is User, and only after it's saved (created)
 def create_user_profile(sender, instance, created, **kwargs):
-    """On new User creation: make a UserProfile + one default WatchList."""
+    """On new User creation: make a UserProfile."""
     if created:
-        profile = UserProfile.objects.create(user=instance)
-        default_watchlist = WatchList.objects.create(name=f"{instance.username}'s Watchlist")
-        profile.watchlists.add(default_watchlist)
+        UserProfile.objects.create(user=instance)

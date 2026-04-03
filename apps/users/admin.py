@@ -13,4 +13,3 @@ class CustomUserAdmin(UserAdmin):
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ['user', 'id']
-    filter_horizontal = ['watchlists']

@@ -14,7 +14,6 @@ from api.v1.catalog.serializers import (
     VideoListSerializer,
     VideoSerializer,
 )
-
 from services import catalog as catalog_service
 
 

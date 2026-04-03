@@ -1,15 +1,20 @@
+from uuid import UUID
+
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
+from api.v1.subscription.serializers import UserSubscriptionSerializer
 from api.v1.users.serializers import (
     UserCreateSerializer,
     UserDetailSerializer,
     UserListSerializer,
-    UserSubscriptionSerializer,
-    WatchListSerializer,
 )
-from services.users import get_subscriptions, get_users, get_watchlists
+from api.v1.watchlist.serializers import WatchListSerializer
+from services import subscriptions as subscriptions_service
+from services.users import get_users
+from services.watchlist import WatchlistService
 
 
 # Set of views
@@ -17,9 +22,17 @@ class UserViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,  # fetching a single object
-    viewsets.GenericViewSet,    # About mixins: we could use single inheritance from "viewsets.ModelViewSet", which gives all the CRUD, but we don't need U and D, so we use separate mixins.
+    viewsets.GenericViewSet,
+    # About mixins: we could use single inheritance from "viewsets.ModelViewSet", which gives all the CRUD, but we don't need U and D, so we use separate mixins.
 ):
     queryset = get_users()
+
+    @staticmethod
+    def _parse_user_id(pk: str) -> UUID:
+        try:
+            return UUID(str(pk))
+        except (TypeError, ValueError) as exc:
+            raise NotFound('User not found') from exc
 
     """
     The following 3 lines gives our endpoint 2 query params:
@@ -54,12 +67,14 @@ class UserViewSet(
     # detail=True => handles single object
     @action(detail=True, methods=['get'], url_path='subscriptions')
     def subscriptions(self, request, pk=None):  # pk - primary key. Usually ID is put in it.
-        user = self.get_object()
-        qs = get_subscriptions(user)  # queryset
+        qs = subscriptions_service.get_user_subscriptions(
+            self._parse_user_id(pk)
+        )
         return Response(UserSubscriptionSerializer(qs, many=True).data)
 
     @action(detail=True, methods=['get'], url_path='watchlists')
     def watchlists(self, request, pk=None):
-        user = self.get_object()
-        qs = get_watchlists(user)
+        qs = WatchlistService.get_all_watchlists(
+            self._parse_user_id(pk)
+        )
         return Response(WatchListSerializer(qs, many=True).data)

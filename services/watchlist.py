@@ -3,28 +3,26 @@ import uuid
 from django.db.models import QuerySet
 
 from apps.catalog.models import Movie
-from apps.users.models import UserProfile
 from apps.watchlist.models import WatchList
 
 
-class Watchlist:
+class WatchlistService:
     @staticmethod
     def create_watchlist(
         name: str,
-        user_profile: UserProfile,
+        owner_id: uuid.UUID,
     ) -> WatchList:
-        watchlist = WatchList.objects.create(name=name)
-
-        user_profile.watchlists.add(watchlist)
-
-        return watchlist
+        return WatchList.objects.create(name=name, owner_id=owner_id)
 
     @staticmethod
     def delete_watchlist(
         watchlist_id: uuid.UUID,
-        user_profile: UserProfile,
+        owner_id: uuid.UUID,
     ) -> bool:
-        deleted_count, _ = user_profile.watchlists.filter(id=watchlist_id).delete()
+        deleted_count, _ = WatchList.objects.filter(
+            id=watchlist_id,
+            owner_id=owner_id,
+        ).delete()
 
         return bool(deleted_count)
 
@@ -32,9 +30,9 @@ class Watchlist:
     def add_movie_to_watchlist(
         watchlist_id: uuid.UUID,
         movie_id: uuid.UUID,
-        user_profile: UserProfile,
+        owner_id: uuid.UUID,
     ) -> None:
-        watchlist = user_profile.watchlists.get(id=watchlist_id)
+        watchlist = WatchList.objects.get(id=watchlist_id, owner_id=owner_id)
         movie = Movie.objects.get(id=movie_id)
 
         watchlist.movies.add(movie)
@@ -44,8 +42,13 @@ class Watchlist:
         return list(WatchList.objects.all().values_list('id', flat=True))
 
     @staticmethod
-    def get_all_watchlists(user_profile: UserProfile) -> QuerySet[WatchList]:
-        return user_profile.watchlists.order_by('id').prefetch_related('movies')
+    def get_all_watchlists(owner_id: uuid.UUID) -> QuerySet[WatchList]:
+        return (
+            WatchList.objects
+            .filter(owner_id=owner_id)
+            .order_by('id')
+            .prefetch_related('movies')
+        )
 
     @staticmethod
     def get_watchlist(

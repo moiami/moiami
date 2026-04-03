@@ -1,9 +1,10 @@
+from datetime import timedelta
+from typing import Any
+from uuid import UUID
+
 from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
-
-from datetime import timedelta
-from typing import Any
 
 from apps.subscription.models import Subscription, UserSubscription
 from domain.exceptions import SubscriptionNotFound
@@ -24,17 +25,17 @@ def get_available_subscriptions() -> QuerySet[Subscription]:
     return Subscription.objects.all()
 
 
-def get_user_subscriptions(user_id: int) -> QuerySet[UserSubscription]:
+def get_user_subscriptions(user_id: UUID) -> QuerySet[UserSubscription]:
     return (
         UserSubscription.objects
-        .select_related("subscription", "user")
+        .select_related("subscription")
         .filter(user_id=user_id)
         .order_by("expired_at")
     )
 
 
 @transaction.atomic
-def subscribe_user(user_id: int, subscription_id: int) -> UserSubscription:
+def subscribe_user(user_id: UUID, subscription_id: int) -> UserSubscription:
     now = timezone.now()
     subscription = (
         subscription_id
@@ -63,7 +64,7 @@ def subscribe_user(user_id: int, subscription_id: int) -> UserSubscription:
     return user_subscription
 
 
-def check_subscription(user_id: int, subscription_id: int) -> bool:
+def check_subscription(user_id: UUID, subscription_id: int) -> bool:
     get_subscription(subscription_id)
 
     return UserSubscription.objects.filter(
@@ -78,7 +79,6 @@ def get_users_with_subscription(subscription_id: int) -> list[dict[str, Any]]:
 
     user_subscriptions = (
         UserSubscription.objects
-        .select_related("user")
         .filter(subscription_id=subscription_id)
         .order_by("expired_at")
     )
@@ -88,7 +88,6 @@ def get_users_with_subscription(subscription_id: int) -> list[dict[str, Any]]:
 
 def _map_user_subscription(user_subscription: UserSubscription) -> dict[str, Any]:
     return {
-        "id": user_subscription.user.id,
-        "name": user_subscription.user.name,
+        "user_id": user_subscription.user_id,
         "subscription_expires_at": user_subscription.expired_at,
     }
