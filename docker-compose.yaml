@@ -1,5 +1,30 @@
 name: moiami
 services:
+  resource:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      SECRET_KEY: 'django-insecure-o&+f#_3gh5d^t=00y37i$$l!)&g44@)_g$$e0#=ourvm2g_l3w)2'
+      DEBUG: true
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - static_files:/app/staticfiles
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - resource
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - static_files:/srv/staticfiles
   db:
     image: postgres:latest
     restart: unless-stopped
@@ -10,7 +35,13 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
   s3:
     image: quay.io/minio/minio:latest
     restart: unless-stopped
@@ -22,5 +53,6 @@ services:
       - minio_data:/data
 
 volumes:
+  static_files:
   postgres_data:
   minio_data:

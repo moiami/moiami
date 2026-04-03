@@ -5,11 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
+from api.v1.subscription.serializers import UserSubscriptionSerializer
 from api.v1.users.serializers import (
     UserCreateSerializer,
     UserDetailSerializer,
     UserListSerializer,
-    UserSubscriptionSerializer,
 )
 from api.v1.watchlist.serializers import WatchListSerializer
 from services import subscriptions as subscriptions_service
