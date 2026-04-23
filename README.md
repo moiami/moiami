@@ -53,122 +53,123 @@
 25. PATCH /api/v1/watchlists/{id}
 26. DELETE /api/v1/watchlists/{id} 
 27. POST /api/v1/watchlists/{id}/movies
-
-moiami_resource_service/
-│
-├── manage.py                  
-├── pyproject.toml             
-├── uv.lock                    
-├── docker-compose.yaml        
-├── Dockerfile                 
-├── Caddyfile                  
-├── .dockerignore
-├── .gitignore
-├── .python-version
-├── README.md
-│
-├── config/                    
-│   ├── __init__.py
-│   ├── settings.py            
-│   ├── urls.py               
-│   ├── wsgi.py
-│   └── asgi.py
-│
-├── apps/                      
-│   ├── __init__.py
-│   │
-│   ├── actions/               
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── tests.py
-│   │   └── migrations/
-│   │
-│   ├── catalog/               
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── tests.py
-│   │   └── migrations/
-│   │
-│   ├── subscription/          
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── tests.py
-│   │   └── migrations/
-│   │
-│   ├── users/                 
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── tests.py
-│   │   ├── migrations/
-│   │   └── templates/
-│   │       └── registration/
-│   │           └── login.html
-│   │
-│   └── watchlist/             
-│       ├── __init__.py
-│       ├── admin.py
-│       ├── apps.py
-│       ├── models.py
-│       ├── tests.py
-│       └── migrations/
-│
-├── api/                       
-│   ├── __init__.py
-│   │
-│   ├── common/                
-│   │   ├── __init__.py
-│   │   ├── authentication.py
-│   │   └── exceptions.py
-│   │
-│   └── v1/                    
-│       ├── __init__.py
-│       ├── urls.py            
-│       │
-│       ├── catalog/           
-│       │   ├── __init__.py
-│       │   ├── serializers.py
-│       │   ├── urls.py
-│       │   └── views.py
-│       │
-│       ├── subscription/      
-│       │   ├── __init__.py
-│       │   ├── serializers.py
-│       │   ├── urls.py
-│       │   └── views.py
-│       │
-│       ├── users/             
-│       │   ├── __init__.py
-│       │   ├── serializers.py
-│       │   ├── urls.py
-│       │   └── views.py
-│       │
-│       └── watchlist/         
-│           ├── __init__.py
-│           ├── serializers.py
-│           ├── urls.py
-│           └── views.py
-│
-├── services/                   
-│   ├── __init__.py
-│   ├── catalog.py
-│   ├── subscriptions.py
-│   ├── users.py
-│   └── watchlist.py
-│
-├── domain/                     
-│   ├── __init__.py
-│   ├── exceptions.py
-│   ├── pagination.py
-│   └── errors/
-│       └── __init__.py
-│
-└── docker/                    
-    └── entrypoint.sh
+<pre>
+    moiami_resource_service/
+    │
+    ├── manage.py                  
+    ├── pyproject.toml             
+    ├── uv.lock                    
+    ├── docker-compose.yaml        
+    ├── Dockerfile                 
+    ├── Caddyfile                  
+    ├── .dockerignore
+    ├── .gitignore
+    ├── .python-version
+    ├── README.md
+    │
+    ├── config/                    
+    │   ├── __init__.py
+    │   ├── settings.py            
+    │   ├── urls.py               
+    │   ├── wsgi.py
+    │   └── asgi.py
+    │
+    ├── apps/                      
+    │   ├── __init__.py
+    │   │
+    │   ├── actions/               
+    │   │   ├── __init__.py
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── models.py
+    │   │   ├── tests.py
+    │   │   └── migrations/
+    │   │
+    │   ├── catalog/               
+    │   │   ├── __init__.py
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── models.py
+    │   │   ├── tests.py
+    │   │   └── migrations/
+    │   │
+    │   ├── subscription/          
+    │   │   ├── __init__.py
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── models.py
+    │   │   ├── tests.py
+    │   │   └── migrations/
+    │   │
+    │   ├── users/                 
+    │   │   ├── __init__.py
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── models.py
+    │   │   ├── tests.py
+    │   │   ├── migrations/
+    │   │   └── templates/
+    │   │       └── registration/
+    │   │           └── login.html
+    │   │
+    │   └── watchlist/             
+    │       ├── __init__.py
+    │       ├── admin.py
+    │       ├── apps.py
+    │       ├── models.py
+    │       ├── tests.py
+    │       └── migrations/
+    │
+    ├── api/                       
+    │   ├── __init__.py
+    │   │
+    │   ├── common/                
+    │   │   ├── __init__.py
+    │   │   ├── authentication.py
+    │   │   └── exceptions.py
+    │   │
+    │   └── v1/                    
+    │       ├── __init__.py
+    │       ├── urls.py            
+    │       │
+    │       ├── catalog/           
+    │       │   ├── __init__.py
+    │       │   ├── serializers.py
+    │       │   ├── urls.py
+    │       │   └── views.py
+    │       │
+    │       ├── subscription/      
+    │       │   ├── __init__.py
+    │       │   ├── serializers.py
+    │       │   ├── urls.py
+    │       │   └── views.py
+    │       │
+    │       ├── users/             
+    │       │   ├── __init__.py
+    │       │   ├── serializers.py
+    │       │   ├── urls.py
+    │       │   └── views.py
+    │       │
+    │       └── watchlist/         
+    │           ├── __init__.py
+    │           ├── serializers.py
+    │           ├── urls.py
+    │           └── views.py
+    │
+    ├── services/                   
+    │   ├── __init__.py
+    │   ├── catalog.py
+    │   ├── subscriptions.py
+    │   ├── users.py
+    │   └── watchlist.py
+    │
+    ├── domain/                     
+    │   ├── __init__.py
+    │   ├── exceptions.py
+    │   ├── pagination.py
+    │   └── errors/
+    │       └── __init__.py
+    │
+    └── docker/                    
+        └── entrypoint.sh
+</pre>
