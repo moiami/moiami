@@ -33,21 +33,27 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
         Получение списка watchlist'ов текущего пользователя
         GET /api/v1/watchlists
         """
+        print(self.request.user.roles, flush=True)
+
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)
 
-            return Response(
+            response = Response(
                 {
-                    'count': self.paginator.count,
+                    'count': self.paginator.page.paginator.count,
                     'next': self.paginator.get_next_link(),
                     'previous': self.paginator.get_previous_link(),
                     'watchlists': serializer.data,
                 },
                 status=status.HTTP_200_OK,
             )
+
+            response['testdfd'] = str(self.request.user.roles)
+
+            return response
 
         serializer = self.get_serializer(queryset, many=True)
 
