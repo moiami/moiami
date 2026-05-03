@@ -1,30 +1,23 @@
 import uuid
 
-from django.conf import settings
 from django.db.models import (
     CASCADE,
-    PROTECT,
-    CharField,
     DateTimeField,
     ForeignKey,
     Model,
     UUIDField,
 )
+from django.utils import timezone
+
+from apps.catalog.models import Movie
 
 
-class ActionType(Model):
-    name = CharField(max_length=255)
-
-class Action(Model):
-    id = UUIDField(primary_key=True,default=uuid.uuid4)
-    happened_at = DateTimeField()
-    user = ForeignKey(
-        settings.AUTH_USER_MODEL,
+class MovieGetAction(Model):
+    id = UUIDField(primary_key=True, default=uuid.uuid4)
+    happened_at = DateTimeField(default=timezone.now, db_index=True)
+    user_id = UUIDField(null=True, blank=True, db_index=True)
+    movie = ForeignKey(
+        Movie,
         on_delete=CASCADE,
-        related_name='actions',
-    )
-    type = ForeignKey(
-        ActionType,
-        on_delete=PROTECT,
-        related_name='actions',
+        related_name='get_actions',
     )

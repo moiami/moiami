@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.common.authentication import HeaderUser, HeaderUserAuthentication
+from api.common.permissions import IsAdminHeaderUser
 from api.v1.catalog.serializers import (
     GenreListSerializer,
     GenreSerializer,
@@ -11,10 +13,12 @@ from api.v1.catalog.serializers import (
     ImageSerializer,
     MovieListSerializer,
     MovieSerializer,
+    MovieStatisticsQuerySerializer,
     VideoListSerializer,
     VideoSerializer,
 )
 from services import catalog as catalog_service
+from services.actions import MovieGetActionService
 
 
 class GenreViewSet(viewsets.ReadOnlyModelViewSet):
@@ -106,6 +110,7 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
 class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset для фильмов"""
 
+    authentication_classes = [HeaderUserAuthentication]
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['director', 'script_writer', 'age_restriction', 'date', 'date_of_premiere', 'country', 'genres']
@@ -135,8 +140,43 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         GET /api/v1/catalog/movies/{id}/
         """
         movie = self.get_object()
+
+        user = request.user if isinstance(request.user, HeaderUser) else None
+        MovieGetActionService.create(movie=movie, user=user)
+
         serializer = self.get_serializer(movie)
         return Response(serializer.data)
+
+
+    @action(
+        detail=True,
+        methods=['get'],
+        url_path='film_statistics',
+        permission_classes=[IsAdminHeaderUser],
+    )
+    def film_statistics(self, request, pk=None):
+        """
+        Получение количества просмотров фильма за период
+        GET /api/v1/catalog/movies/{movie_id}/film_statistics/
+        """
+        movie = self.get_object()
+        query_serializer = MovieStatisticsQuerySerializer(
+            data=request.query_params,
+        )
+        query_serializer.is_valid(raise_exception=True)
+
+        start_timestamp = query_serializer.validated_data['start_timestamp']
+        end_timestamp = query_serializer.validated_data['end_timestamp']
+
+        views_count = MovieGetActionService.count_by_movie_and_period(
+            movie=movie,
+            start_timestamp=start_timestamp,
+            end_timestamp=end_timestamp,
+        )
+
+        return Response({
+            'views_count': views_count,
+        })
 
 
     @action(detail=True, methods=['get'], url_path='genres')
