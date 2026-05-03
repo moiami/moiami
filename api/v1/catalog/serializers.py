@@ -50,6 +50,20 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = ['id','name','description','director','script_writer','age_restriction','date','date_of_premiere','country','genres','subscriptions','poster','video',]
         read_only_fields = ["id"]
 
+
+class MovieStatisticsQuerySerializer(serializers.Serializer):
+    start_timestamp = serializers.DateTimeField()
+    end_timestamp = serializers.DateTimeField()
+
+    def validate(self, attrs):
+        if attrs['start_timestamp'] > attrs['end_timestamp']:
+            raise serializers.ValidationError(
+                'start_timestamp must be less than or equal to end_timestamp'
+            )
+
+        return attrs
+
+
 class GenreMovieSerializer(serializers.ModelSerializer):
     movie = MovieListSerializer(read_only=True)
     genre_id = serializers.UUIDField(source='genre.id', read_only=True)
