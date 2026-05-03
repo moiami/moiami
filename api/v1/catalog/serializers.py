@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from apps.catalog.models import Genre, Image, Movie, Video
 
+MAX_BIG_INTEGER = 9223372036854775807
+
 
 class GenreListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,8 +54,14 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class MovieStatisticsQuerySerializer(serializers.Serializer):
-    start_timestamp = serializers.DateTimeField()
-    end_timestamp = serializers.DateTimeField()
+    start_timestamp = serializers.IntegerField(
+        min_value=0,
+        max_value=MAX_BIG_INTEGER,
+    )
+    end_timestamp = serializers.IntegerField(
+        min_value=0,
+        max_value=MAX_BIG_INTEGER,
+    )
 
     def validate(self, attrs):
         if attrs['start_timestamp'] > attrs['end_timestamp']:

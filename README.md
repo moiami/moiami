@@ -2,11 +2,9 @@
 
 #### Сервис ресурсов команды moiami написанный на django.
 
-##### Сущьности сервиса:
+##### Сущности сервиса:
 
-​	Action
-
-​	ActionType
+​	MovieGetAction
 
 ​	Genre
 
@@ -26,58 +24,81 @@
 
 ### Эндпоинты:
 
-1. GET /api/v1/catalog/movies/ 
+1. GET /api/v1/catalog/movies/
 2. GET /api/v1/catalog/movies/{id}/
 3. GET /api/v1/catalog/movies/{id}/genres/
 4. GET /api/v1/catalog/movies/subscriptions/{subscription_id}/
 5. GET /api/v1/catalog/genres/
 6. GET /api/v1/catalog/genres/{id}/
-7.  GET /api/v1/catalog/images/ 
+7.  GET /api/v1/catalog/images/
 8.  GET /api/v1/catalog/images/{id}/
-9. GET /api/v1/catalog/videos/ 
-10. GET /api/v1/catalog/videos/{id}/ 
+9. GET /api/v1/catalog/videos/
+10. GET /api/v1/catalog/videos/{id}/
 11. GET /api/v1/subscriptions/
 12. GET /api/v1/subscriptions/{id}/
-13. POST /api/v1/user-subscriptions/add/ 
-14. GET /api/v1/user-subscriptions/check/{subscription_id}/ 
+13. POST /api/v1/user-subscriptions/add/
+14. GET /api/v1/user-subscriptions/check/{subscription_id}/
 15. GET /api/v1/user-subscriptions/{subscription_id}/users/
 16. POST /api/v1/users/
 17. GET /api/v1/users/
-18. GET /api/v1/users/{id}/ 
+18. GET /api/v1/users/{id}/
 19. GET /api/v1/users/{id}/subscriptions/
 20. GET /api/v1/users/{id}/watchlists/
-21. GET /api/v1/watchlists 
-22. POST /api/v1/watchlists 
+21. GET /api/v1/watchlists
+22. POST /api/v1/watchlists
 23. GET /api/v1/watchlists/{id}
-24. PUT /api/v1/watchlists/{id} 
+24. PUT /api/v1/watchlists/{id}
 25. PATCH /api/v1/watchlists/{id}
-26. DELETE /api/v1/watchlists/{id} 
+26. DELETE /api/v1/watchlists/{id}
 27. POST /api/v1/watchlists/{id}/movies
+28. GET /api/v1/catalog/movies/{id}/film_statistics/?start_timestamp={timestamp}&end_timestamp={timestamp}
+
+##### Статистика просмотров:
+
+​GET /api/v1/catalog/movies/{id}/ создает запись просмотра фильма.
+
+​GET /api/v1/catalog/movies/{id}/film_statistics/ возвращает количество просмотров за период в формате JSON:
+
+Пример запроса:
+
+​GET /api/v1/catalog/movies/{id}/film_statistics/?start_timestamp=1777820400&end_timestamp=1777906800
+
+Пример:
+```json
+{
+  "views_count": 10
+}
+```
+
+​Параметры запроса: start_timestamp, end_timestamp - Unix timestamp в секундах.
+
+​Заголовки: X-User-Id, X-User-Role=["admin"].
+
 <pre>
     moiami_resource_service/
     │
-    ├── manage.py                  
-    ├── pyproject.toml             
-    ├── uv.lock                    
-    ├── docker-compose.yaml        
-    ├── Dockerfile                 
-    ├── Caddyfile                  
+    ├── manage.py
+    ├── pyproject.toml
+    ├── uv.lock
+    ├── docker-compose.yaml
+    ├── Dockerfile
+    ├── Caddyfile
     ├── .dockerignore
     ├── .gitignore
     ├── .python-version
     ├── README.md
     │
-    ├── config/                    
+    ├── config/
     │   ├── __init__.py
-    │   ├── settings.py            
-    │   ├── urls.py               
+    │   ├── settings.py
+    │   ├── urls.py
     │   ├── wsgi.py
     │   └── asgi.py
     │
-    ├── apps/                      
+    ├── apps/
     │   ├── __init__.py
     │   │
-    │   ├── actions/               
+    │   ├── actions/
     │   │   ├── __init__.py
     │   │   ├── admin.py
     │   │   ├── apps.py
@@ -85,7 +106,7 @@
     │   │   ├── tests.py
     │   │   └── migrations/
     │   │
-    │   ├── catalog/               
+    │   ├── catalog/
     │   │   ├── __init__.py
     │   │   ├── admin.py
     │   │   ├── apps.py
@@ -93,7 +114,7 @@
     │   │   ├── tests.py
     │   │   └── migrations/
     │   │
-    │   ├── subscription/          
+    │   ├── subscription/
     │   │   ├── __init__.py
     │   │   ├── admin.py
     │   │   ├── apps.py
@@ -101,7 +122,7 @@
     │   │   ├── tests.py
     │   │   └── migrations/
     │   │
-    │   ├── users/                 
+    │   ├── users/
     │   │   ├── __init__.py
     │   │   ├── admin.py
     │   │   ├── apps.py
@@ -112,7 +133,7 @@
     │   │       └── registration/
     │   │           └── login.html
     │   │
-    │   └── watchlist/             
+    │   └── watchlist/
     │       ├── __init__.py
     │       ├── admin.py
     │       ├── apps.py
@@ -120,56 +141,58 @@
     │       ├── tests.py
     │       └── migrations/
     │
-    ├── api/                       
+    ├── api/
     │   ├── __init__.py
     │   │
-    │   ├── common/                
+    │   ├── common/
     │   │   ├── __init__.py
     │   │   ├── authentication.py
+    │   │   ├── permissions.py
     │   │   └── exceptions.py
     │   │
-    │   └── v1/                    
+    │   └── v1/
     │       ├── __init__.py
-    │       ├── urls.py            
+    │       ├── urls.py
     │       │
-    │       ├── catalog/           
+    │       ├── catalog/
     │       │   ├── __init__.py
     │       │   ├── serializers.py
     │       │   ├── urls.py
     │       │   └── views.py
     │       │
-    │       ├── subscription/      
+    │       ├── subscription/
     │       │   ├── __init__.py
     │       │   ├── serializers.py
     │       │   ├── urls.py
     │       │   └── views.py
     │       │
-    │       ├── users/             
+    │       ├── users/
     │       │   ├── __init__.py
     │       │   ├── serializers.py
     │       │   ├── urls.py
     │       │   └── views.py
     │       │
-    │       └── watchlist/         
+    │       └── watchlist/
     │           ├── __init__.py
     │           ├── serializers.py
     │           ├── urls.py
     │           └── views.py
     │
-    ├── services/                   
+    ├── services/
     │   ├── __init__.py
+    │   ├── actions.py
     │   ├── catalog.py
     │   ├── subscriptions.py
     │   ├── users.py
     │   └── watchlist.py
     │
-    ├── domain/                     
+    ├── domain/
     │   ├── __init__.py
     │   ├── exceptions.py
     │   ├── pagination.py
     │   └── errors/
     │       └── __init__.py
     │
-    └── docker/                    
+    └── docker/
         └── entrypoint.sh
 </pre>

@@ -1,20 +1,24 @@
 import uuid
+from time import time
 
 from django.db.models import (
     CASCADE,
-    DateTimeField,
+    BigIntegerField,
     ForeignKey,
     Model,
     UUIDField,
 )
-from django.utils import timezone
 
 from apps.catalog.models import Movie
 
 
+def current_timestamp() -> int:
+    return int(time())
+
+
 class MovieGetAction(Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
-    happened_at = DateTimeField(default=timezone.now, db_index=True)
+    happened_at = BigIntegerField(default=current_timestamp, db_index=True)
     user_id = UUIDField(null=True, blank=True, db_index=True)
     movie = ForeignKey(
         Movie,

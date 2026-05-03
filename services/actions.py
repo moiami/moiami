@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from api.common.authentication import HeaderUser
 from apps.actions.models import MovieGetAction
 from apps.catalog.models import Movie
@@ -19,8 +17,8 @@ class MovieGetActionService:
     @staticmethod
     def count_by_movie_and_period(
         movie: Movie,
-        start_timestamp: datetime,
-        end_timestamp: datetime,
+        start_timestamp: int,
+        end_timestamp: int,
     ) -> int:
         return MovieGetAction.objects.filter(
             movie=movie,
