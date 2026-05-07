@@ -58,6 +58,8 @@
 
 ​GET /api/v1/catalog/movies/{id}/ создает запись просмотра фильма.
 
+---
+
 ​GET /api/v1/catalog/movies/{id}/film_statistics/ возвращает количество просмотров за период в формате JSON:
 
 Пример запроса:
@@ -74,6 +76,8 @@
 ​Параметры запроса: start_timestamp, end_timestamp - Unix timestamp в секундах.
 
 ​Заголовки: X-User-Id, X-User-Role=["admin"].
+
+---
 
 ​GET /api/v1/catalog/movies/top/ возвращает топ фильмов по просмотрам за период в формате JSON:
 
