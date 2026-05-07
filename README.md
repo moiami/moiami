@@ -52,6 +52,7 @@
 26. DELETE /api/v1/watchlists/{id}
 27. POST /api/v1/watchlists/{id}/movies
 28. GET /api/v1/catalog/movies/{id}/film_statistics/?start_timestamp={timestamp}&end_timestamp={timestamp}
+29. GET /api/v1/catalog/movies/top/?start_timestamp={timestamp}&end_timestamp={timestamp}&limit={count}
 
 ##### Статистика просмотров:
 
@@ -71,6 +72,27 @@
 ```
 
 ​Параметры запроса: start_timestamp, end_timestamp - Unix timestamp в секундах.
+
+​Заголовки: X-User-Id, X-User-Role=["admin"].
+
+​GET /api/v1/catalog/movies/top/ возвращает топ фильмов по просмотрам за период в формате JSON:
+
+Пример запроса:
+
+​GET /api/v1/catalog/movies/top/?start_timestamp=1777820400&end_timestamp=1777906800&limit=3
+
+Пример:
+```json
+[
+  {
+    "id": "9c56ae83-8ad5-44de-b19b-ecfb56de04f1",
+    "name": "Movie name",
+    "views_count": 10
+  }
+]
+```
+
+​Параметры запроса: start_timestamp, end_timestamp - Unix timestamp в секундах, limit - количество фильмов в топе.
 
 ​Заголовки: X-User-Id, X-User-Role=["admin"].
 

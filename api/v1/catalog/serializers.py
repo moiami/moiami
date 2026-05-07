@@ -43,6 +43,15 @@ class MovieListSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ["id", "name"]
 
+
+class TopMovieListSerializer(serializers.ModelSerializer):
+    views_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Movie
+        fields = ["id", "name", "views_count"]
+
+
 class MovieSerializer(serializers.ModelSerializer):
     genres = GenreListSerializer(many=True, read_only=True)
     poster = ImageListSerializer(read_only=True)
@@ -70,6 +79,13 @@ class MovieStatisticsQuerySerializer(serializers.Serializer):
             )
 
         return attrs
+
+
+class TopMoviesQuerySerializer(MovieStatisticsQuerySerializer):
+    limit = serializers.IntegerField(
+        min_value=1,
+        max_value=1000,
+    )
 
 
 class GenreMovieSerializer(serializers.ModelSerializer):

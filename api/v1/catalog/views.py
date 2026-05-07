@@ -14,6 +14,8 @@ from api.v1.catalog.serializers import (
     MovieListSerializer,
     MovieSerializer,
     MovieStatisticsQuerySerializer,
+    TopMovieListSerializer,
+    TopMoviesQuerySerializer,
     VideoListSerializer,
     VideoSerializer,
 )
@@ -177,6 +179,36 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({
             'views_count': views_count,
         })
+
+
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path='top',
+        permission_classes=[IsAdminHeaderUser],
+    )
+    def top(self, request):
+        """
+        Получение топа фильмов по просмотрам за период
+        GET /api/v1/catalog/movies/top/
+        """
+        query_serializer = TopMoviesQuerySerializer(
+            data=request.query_params,
+        )
+        query_serializer.is_valid(raise_exception=True)
+
+        start_timestamp = query_serializer.validated_data['start_timestamp']
+        end_timestamp = query_serializer.validated_data['end_timestamp']
+        limit = query_serializer.validated_data['limit']
+
+        movies = MovieGetActionService.get_top_movies_by_views(
+            start_timestamp=start_timestamp,
+            end_timestamp=end_timestamp,
+            limit=limit,
+        )
+
+        serializer = TopMovieListSerializer(movies, many=True)
+        return Response(serializer.data)
 
 
     @action(detail=True, methods=['get'], url_path='genres')
