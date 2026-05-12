@@ -220,7 +220,11 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(GenreListSerializer(catalog_service.get_genre_by_movie_id(id), many=True).data)
 
 
-    @action(detail=False, methods=['get'], url_path='subscriptions/<int:subscription_id>')
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path=r'subscriptions/(?P<subscription_id>\d+)',
+    )
     def by_subscription(self, request, subscription_id):
         """
         Получить все фильмы по ID подписки
