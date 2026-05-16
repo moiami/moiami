@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 
 from apps.catalog.models import Genre, Image, Movie, Video
@@ -21,10 +22,12 @@ def get_all_movies() -> QuerySet[Movie]:
 
 
 def get_genre_by_movie_id(movie_id: uuid.UUID) -> QuerySet[Genre]:
-    genres = Movie.objects.get(id=movie_id).genres
-    if not genres:
+    try:
+        movie = Movie.objects.get(id=movie_id)
+    except (Movie.DoesNotExist, ValidationError, ValueError):
         raise NotFoundGenresByMovieId()
-    return genres
+
+    return movie.genres.all()
 
 
 def get_all_genre() -> QuerySet[Genre]:

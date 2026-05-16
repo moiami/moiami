@@ -31,10 +31,12 @@ class HeaderUserAuthentication(BaseAuthentication):
         except json.JSONDecodeError:
             try:
                 roles = ast.literal_eval(raw_user_roles)
-            except (SyntaxError, ValueError) as exc:
-                raise AuthenticationFailed(
-                    "X-User-Role header must be a list of strings"
-                ) from exc
+            except (SyntaxError, ValueError):
+                roles = [
+                    role.strip()
+                    for role in raw_user_roles.replace(",", " ").split()
+                    if role.strip()
+                ]
 
         if not isinstance(roles, list) or not all(
             isinstance(role, str) for role in roles

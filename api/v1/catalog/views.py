@@ -217,7 +217,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         Получить все жанры для конкретного фильма
         GET /api/v1/catalog/movies/{movie_id}/genres/
         """
-        return Response(GenreListSerializer(catalog_service.get_genre_by_movie_id(id), many=True).data)
+        return Response(GenreListSerializer(catalog_service.get_genre_by_movie_id(pk), many=True).data)
 
 
     @action(
