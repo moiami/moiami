@@ -17,13 +17,11 @@ from services.users import get_users
 from services.watchlist import WatchlistService
 
 
-# Set of views
 class UserViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,  # fetching a single object
+    mixins.RetrieveModelMixin,
     viewsets.GenericViewSet,
-    # About mixins: we could use single inheritance from "viewsets.ModelViewSet", which gives all the CRUD, but we don't need U and D, so we use separate mixins.
 ):
     queryset = get_users()
 
@@ -56,17 +54,16 @@ class UserViewSet(
     would respond with UserCreateSerializer data - we want to respond with full user detail instead
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data) # instantiates the UserCreateSerializer object
-        serializer.is_valid(raise_exception=True)           # Returns 400 in case of error
-        user = serializer.save()                            # calls UserCreateSerializer.create(), which hashes password and saves to DB
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         return Response(
             UserDetailSerializer(user).data,
-            status=status.HTTP_201_CREATED,     # 201 - "resource was created"
+            status=status.HTTP_201_CREATED,
         )
 
-    # detail=True => handles single object
     @action(detail=True, methods=['get'], url_path='subscriptions')
-    def subscriptions(self, request, pk=None):  # pk - primary key. Usually ID is put in it.
+    def subscriptions(self, request, pk=None):
         qs = subscriptions_service.get_user_subscriptions(
             self._parse_user_id(pk)
         )

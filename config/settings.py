@@ -13,28 +13,25 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+from storages.backends.s3boto3 import S3Boto3Storage
+
 
 def parse_bool_from_env(name: str) -> bool:
     value = os.getenv(name)
-
     if value is None:
         return False
-
-    return value.strip() == "true"
+    return value.strip().lower() == "true"
 
 
 def parse_list_from_env(name: str, default: list[str]) -> list[str]:
     value = os.getenv(name)
-
     if value is None:
         return default
-
     return [item.strip() for item in value.split(',') if item.strip()]
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -46,7 +43,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = parse_bool_from_env('DEBUG')
 
 ALLOWED_HOSTS = parse_list_from_env('ALLOWED_HOSTS', [])
-
 
 # Application definition
 
@@ -64,7 +60,8 @@ INSTALLED_APPS = [
     'apps.catalog',
     'apps.subscription',
     'apps.watchlist',
-    'apps.users'
+    'apps.users',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -96,7 +93,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
@@ -110,6 +106,31 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'minioadmin')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', 'minioadmin')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'videos')
+AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL', 'http://s3:9000')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_DEFAULT_ACL = os.getenv('AWS_DEFAULT_ACL', 'public-read')
+AWS_QUERYSTRING_AUTH = os.getenv('AWS_QUERYSTRING_AUTH', 'False').lower() == 'true'
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'localhost:9000') + '/videos'
+AWS_S3_SECURE_URLS = False
+AWS_S3_URL_PROTOCOL = 'http:'
+
+
+class MinioVideoStorage(S3Boto3Storage):
+    bucket_name = AWS_STORAGE_BUCKET_NAME
+    default_acl = AWS_DEFAULT_ACL
+    querystring_auth = AWS_QUERYSTRING_AUTH
+    file_overwrite = False
+
+
+VIDEO_STORAGE = MinioVideoStorage()
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -128,7 +149,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -164,5 +184,8 @@ SPECTACULAR_SETTINGS = {
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

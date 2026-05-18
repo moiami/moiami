@@ -1,7 +1,19 @@
 #!/bin/sh
+set -e
 
-python manage.py makemigrations --noinput
-python manage.py collectstatic --noinput
+echo "Waiting for database..."
+
+# (опционально, но очень желательно — ждём Postgres)
+until python manage.py check --database default; do
+  echo "DB not ready yet..."
+  sleep 2
+done
+
+echo "Running migrations..."
 python manage.py migrate --noinput
 
-gunicorn config.wsgi:application --bind 0.0.0.0:8000
+echo "Collecting static..."
+python manage.py collectstatic --noinput
+
+echo "Starting server..."
+exec gunicorn config.wsgi:application --bind 0.0.0.0:8000

@@ -1,6 +1,12 @@
+import pathlib
+import uuid
+from uuid import uuid4
+
+from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import parsers, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
@@ -19,8 +25,11 @@ from api.v1.catalog.serializers import (
     VideoListSerializer,
     VideoSerializer,
 )
+from apps.catalog.models import Video
+from domain import exceptions as domain_exceptions
 from services import catalog as catalog_service
 from services.actions import MovieGetActionService
+from services.s3 import generate_presigned_post, generate_presigned_url
 
 
 class GenreViewSet(viewsets.ReadOnlyModelViewSet):
@@ -39,19 +48,11 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
         return GenreSerializer
 
     def list(self, request, *args, **kwargs):
-        """
-        Получение списка жанров
-        GET /api/v1/catalog/genres/
-        """
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        """
-        Получение информации по жанру
-        GET /api/v1/catalog/genres/{id}/
-        """
         genre = self.get_object()
         serializer = self.get_serializer(genre)
         return Response(serializer.data)
@@ -83,12 +84,13 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class VideoViewSet(viewsets.ReadOnlyModelViewSet):
+class VideoViewSet(viewsets.ModelViewSet):
     """Viewset для видео"""
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    queryset = catalog_service.get_all_videos()
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+    queryset = Video.objects.all()
 
     def get_queryset(self):
         return catalog_service.get_all_videos()
@@ -97,6 +99,16 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == "list":
             return VideoListSerializer
         return VideoSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        video = serializer.save()
+        return Response(
+            VideoSerializer(video).data,
+            status=status.HTTP_201_CREATED,
+            headers={'Location': f'/api/v1/catalog/videos/{video.id}/'}
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -127,44 +139,22 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         return MovieSerializer
 
     def list(self, request, *args, **kwargs):
-        """
-        Получение списка фильмов
-        GET /api/v1/catalog/movies/
-        """
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
     def retrieve(self, request, *args, **kwargs):
-        """
-        Получение детальной информации по фильму
-        GET /api/v1/catalog/movies/{id}/
-        """
         movie = self.get_object()
-
         user = request.user if isinstance(request.user, HeaderUser) else None
         MovieGetActionService.create(movie=movie, user=user)
-
         serializer = self.get_serializer(movie)
         return Response(serializer.data)
 
-
-    @action(
-        detail=True,
-        methods=['get'],
-        url_path='film_statistics',
-        permission_classes=[IsAdminHeaderUser],
-    )
+    @action(detail=True, methods=['get'], url_path='film_statistics',
+            permission_classes=[IsAdminHeaderUser])
     def film_statistics(self, request, pk=None):
-        """
-        Получение количества просмотров фильма за период
-        GET /api/v1/catalog/movies/{movie_id}/film_statistics/
-        """
         movie = self.get_object()
-        query_serializer = MovieStatisticsQuerySerializer(
-            data=request.query_params,
-        )
+        query_serializer = MovieStatisticsQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
 
         start_timestamp = query_serializer.validated_data['start_timestamp']
@@ -175,26 +165,12 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
             start_timestamp=start_timestamp,
             end_timestamp=end_timestamp,
         )
+        return Response({'views_count': views_count})
 
-        return Response({
-            'views_count': views_count,
-        })
-
-
-    @action(
-        detail=False,
-        methods=['get'],
-        url_path='top',
-        permission_classes=[IsAdminHeaderUser],
-    )
+    @action(detail=False, methods=['get'], url_path='top',
+            permission_classes=[IsAdminHeaderUser])
     def top(self, request):
-        """
-        Получение топа фильмов по просмотрам за период
-        GET /api/v1/catalog/movies/top/
-        """
-        query_serializer = TopMoviesQuerySerializer(
-            data=request.query_params,
-        )
+        query_serializer = TopMoviesQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
 
         start_timestamp = query_serializer.validated_data['start_timestamp']
@@ -206,29 +182,24 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
             end_timestamp=end_timestamp,
             limit=limit,
         )
-
         serializer = TopMovieListSerializer(movies, many=True)
         return Response(serializer.data)
 
-
     @action(detail=True, methods=['get'], url_path='genres')
     def genres(self, request, pk):
-        """
-        Получить все жанры для конкретного фильма
-        GET /api/v1/catalog/movies/{movie_id}/genres/
-        """
-        return Response(GenreListSerializer(catalog_service.get_genre_by_movie_id(pk), many=True).data)
+        genres_queryset = catalog_service.get_genre_by_movie_id(pk)
+        return Response(GenreListSerializer(genres_queryset, many=True).data)
 
-
-    @action(
-        detail=False,
-        methods=['get'],
-        url_path=r'subscriptions/(?P<subscription_id>\d+)',
-    )
+    @action(detail=False, methods=['get'], url_path='subscriptions/<uuid:subscription_id>')
     def by_subscription(self, request, subscription_id):
-        """
-        Получить все фильмы по ID подписки
-        GET /api/v1/catalog/movies/subscriptions/{subscription_id}/
-        """
-        return Response(
-            MovieListSerializer(catalog_service.get_movie_by_subscription_id(subscription_id), many=True).data)
+        """Получить все фильмы по ID подписки"""
+        if not isinstance(subscription_id, uuid.UUID):
+            subscription_id = uuid.UUID(subscription_id)
+
+        movies = catalog_service.get_movie_by_subscription_id(subscription_id)
+
+        if not movies.exists():
+            raise domain_exceptions.NotFoundMoviesBySubscriptionId()
+
+        serializer = MovieListSerializer(movies, many=True)
+        return Response(serializer.data)
