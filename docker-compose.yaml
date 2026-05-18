@@ -1,20 +1,29 @@
 name: moiami
+
 services:
   resource:
     build: .
     restart: unless-stopped
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     environment:
-      SECRET_KEY: 'django-insecure-o&+f#_3gh5d^t=00y37i$$l!)&g44@)_g$$e0#=ourvm2g_l3w)2'
-      DEBUG: true
+      SECRET_KEY: "django-insecure-o&+f#_3gh5d^t=00y37i$$l!)&g44@)_g$$e0#=ourvm2g_l3w)2"
+      DEBUG: "true"
       DB_HOST: db
       DB_PORT: 5432
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_STORAGE_BUCKET_NAME: videos
+      AWS_S3_ENDPOINT_URL: http://s3:9000
+      AWS_DEFAULT_ACL: public-read
+      AWS_QUERYSTRING_AUTH: "false"
+      AWS_S3_CUSTOM_DOMAIN: "localhost:9000"
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - static_files:/app/staticfiles
+
   caddy:
     image: caddy:2
     restart: unless-stopped
@@ -25,23 +34,25 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - static_files:/srv/staticfiles
+
   db:
-    image: postgres:latest
+    image: postgres:16
     restart: unless-stopped
     ports:
       - "1234:5432"
     environment:
-      POSTGRES_USERNAME: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 5s
+
   s3:
     image: quay.io/minio/minio:latest
     restart: unless-stopped
@@ -49,8 +60,29 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
     volumes:
       - minio_data:/data
+
+  create_buckets:
+    image: minio/mc:latest
+    depends_on:
+      - s3
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Waiting for MinIO...';
+      until mc alias set myminio http://s3:9000 minioadmin minioadmin 2>/dev/null; do
+        sleep 1;
+      done;
+      echo 'Creating bucket...';
+      mc mb -p myminio/videos || true;
+      mc anonymous set public myminio/videos;
+      echo 'Done!';
+      exit 0;
+      "
+    restart: "no"
 
 volumes:
   static_files:

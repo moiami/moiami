@@ -35,8 +35,8 @@ class VideoListSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ["id","link360","link1080"]
-        read_only_fields = ["id"]
+        fields = ["id", "quality", "file", "link360", "link1080"]
+        read_only_fields = ["id", "link360", "link1080"]
 
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
