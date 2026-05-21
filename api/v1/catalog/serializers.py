@@ -10,16 +10,19 @@ class GenreListSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ["id", "name"]
 
+
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ["id", "name"]
         read_only_fields = ["id"]
 
+
 class ImageListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ["id", "link"]
+
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,16 +30,19 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ["id", "file", "link"]
         read_only_fields = ["id", "link"]
 
+
 class VideoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ["id", "link360","link1080"]
+        fields = ["id", "link360", "link1080"]
+
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = ["id", "quality", "file", "link360", "link1080"]
         read_only_fields = ["id", "link360", "link1080"]
+
 
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,9 +62,24 @@ class MovieSerializer(serializers.ModelSerializer):
     genres = GenreListSerializer(many=True, read_only=True)
     poster = ImageListSerializer(read_only=True)
     video = VideoListSerializer(read_only=True)
+
     class Meta:
         model = Movie
-        fields = ['id','name','description','director','script_writer','age_restriction','date','date_of_premiere','country','genres','subscriptions','poster','video',]
+        fields = [
+            "id",
+            "name",
+            "description",
+            "director",
+            "script_writer",
+            "age_restriction",
+            "date",
+            "date_of_premiere",
+            "country",
+            "genres",
+            "subscriptions",
+            "poster",
+            "video",
+        ]
         read_only_fields = ["id"]
 
 
@@ -73,9 +94,9 @@ class MovieStatisticsQuerySerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        if attrs['start_timestamp'] > attrs['end_timestamp']:
+        if attrs["start_timestamp"] > attrs["end_timestamp"]:
             raise serializers.ValidationError(
-                'start_timestamp must be less than or equal to end_timestamp'
+                "start_timestamp must be less than or equal to end_timestamp"
             )
 
         return attrs
@@ -90,9 +111,10 @@ class TopMoviesQuerySerializer(MovieStatisticsQuerySerializer):
 
 class GenreMovieSerializer(serializers.ModelSerializer):
     movie = MovieListSerializer(read_only=True)
-    genre_id = serializers.UUIDField(source='genre.id', read_only=True)
-    genre_name = serializers.CharField(source='genre.name', read_only=True)
+    genre_id = serializers.UUIDField(source="genre.id", read_only=True)
+    genre_name = serializers.CharField(source="genre.name", read_only=True)
+
     class Meta:
         model = Genre
-        fields = ["id","name"]
+        fields = ["id", "name"]
         read_only_fields = ["id"]

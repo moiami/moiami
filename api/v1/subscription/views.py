@@ -28,6 +28,19 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
             return SubscriptionListSerializer
         return SubscriptionSerializer
 
+    def create(self, request, *args, **kwargs):
+        """
+        Создание новой подписки.
+        POST /api/v1/subscriptions/
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        subscription = serializer.save()
+        return Response(
+            self.get_serializer(subscription).data,
+            status=status.HTTP_201_CREATED,
+        )
+
     def list(self, request, *args, **kwargs):
         """
         Получение списка подписок
@@ -56,7 +69,9 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return subscriptions_service.get_user_subscriptions(self.request.user.id)
+        return subscriptions_service.get_user_subscriptions(
+            self.request.user.id
+        )
 
     def get_serializer_class(self):
         if self.action == "add_subscription":
@@ -84,10 +99,14 @@ class UserSubscriptionViewSet(viewsets.GenericViewSet):
                 "message": "Подписка успешно оформлена",
                 "user_subscription": result_data,
             },
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_201_CREATED,
         )
 
-    @action(detail=False, methods=["get"], url_path="check/(?P<subscription_id>[^/.]+)")
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="check/(?P<subscription_id>[^/.]+)",
+    )
     def check_subscription(self, request, subscription_id=None):
         """
         Проверка наличия определённой подписки у пользователя

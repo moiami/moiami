@@ -39,22 +39,19 @@ class WatchlistService:
 
     @staticmethod
     def get_all_ids() -> list[uuid.UUID]:
-        return list(WatchList.objects.all().values_list('id', flat=True))
+        return list(WatchList.objects.all().values_list("id", flat=True))
 
     @staticmethod
     def get_all_watchlists(owner_id: uuid.UUID) -> QuerySet[WatchList]:
         return (
-            WatchList.objects
-            .filter(owner_id=owner_id)
-            .order_by('id')
-            .prefetch_related('movies')
+            WatchList.objects.filter(owner_id=owner_id)
+            .order_by("id")
+            .prefetch_related("movies")
         )
 
     @staticmethod
-    def get_watchlist(
-        watchlist_id: uuid.UUID
-    ) -> WatchList:
+    def get_watchlist(watchlist_id: uuid.UUID) -> WatchList:
         """Возвращет WatchList, который содержит кэшированные значения movies"""
-        queryset = WatchList.objects.prefetch_related('movies')
+        queryset = WatchList.objects.prefetch_related("movies")
 
         return queryset.get(id=watchlist_id)

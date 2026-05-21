@@ -5,21 +5,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('catalog', '0001_initial'),
+        ("catalog", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WatchList',
+            name="WatchList",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('owner_id', models.UUIDField(db_index=True)),
-                ('name', models.CharField(max_length=255)),
-                ('movies', models.ManyToManyField(blank=True, related_name='watchlists', to='catalog.movie')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, primary_key=True, serialize=False
+                    ),
+                ),
+                ("owner_id", models.UUIDField(db_index=True)),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "movies",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="watchlists",
+                        to="catalog.movie",
+                    ),
+                ),
             ],
         ),
     ]

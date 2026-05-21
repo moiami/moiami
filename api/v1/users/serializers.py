@@ -7,14 +7,22 @@ from services.users import create_user
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ["id", "username"]
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name',
-                  'is_staff', 'is_active', 'date_joined']
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "is_staff",
+            "is_active",
+            "date_joined",
+        ]
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -22,11 +30,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
+        fields = ["username", "email", "password", "first_name", "last_name"]
 
     # By default, serializers have 'create' method, which calls User.objects.create()
     # But it stores plain text
     # So, we override 'create' method for password hashing, which is provided by User.objects.create_user
     def create(self, validated_data):
-        """ Called whenever serializer.save() is called  """
+        """Called whenever serializer.save() is called"""
         return create_user(validated_data)

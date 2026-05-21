@@ -16,15 +16,15 @@ from services.watchlist import WatchlistService
 class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
     authentication_classes = [HeaderUserAuthentication]
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
+    lookup_field = "id"
 
     def get_queryset(self):
         return WatchlistService.get_all_watchlists(self.request.user.id)
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return WatchListListSerializer
-        if self.action == 'add_movie':
+        if self.action == "add_movie":
             return WatchListAddMovieSerializer
         return WatchListSerializer
 
@@ -43,21 +43,23 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
 
             response = Response(
                 {
-                    'count': self.paginator.page.paginator.count,
-                    'next': self.paginator.get_next_link(),
-                    'previous': self.paginator.get_previous_link(),
-                    'watchlists': serializer.data,
+                    "count": self.paginator.page.paginator.count,
+                    "next": self.paginator.get_next_link(),
+                    "previous": self.paginator.get_previous_link(),
+                    "watchlists": serializer.data,
                 },
                 status=status.HTTP_200_OK,
             )
 
-            response['testdfd'] = str(self.request.user.roles)
+            response["testdfd"] = str(self.request.user.roles)
 
             return response
 
         serializer = self.get_serializer(queryset, many=True)
 
-        return Response({'watchlists': serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"watchlists": serializer.data}, status=status.HTTP_200_OK
+        )
 
     def create(self, request, *args, **kwargs):
         """
@@ -68,7 +70,7 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
         serializer.is_valid(raise_exception=True)
 
         watchlist = WatchlistService.create_watchlist(
-            name=serializer.validated_data['name'],
+            name=serializer.validated_data["name"],
             owner_id=self.request.user.id,
         )
         response_serializer = WatchListSerializer(watchlist)
@@ -92,7 +94,7 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
         """
         return super().destroy(request, *args, **kwargs)
 
-    @action(detail=True, methods=['post'], url_path='movies')
+    @action(detail=True, methods=["post"], url_path="movies")
     def add_movie(self, request, *args, **kwargs):
         """
         Добавление фильма в watchlist
@@ -104,7 +106,7 @@ class WatchListViewSet(viewsets.ModelViewSet[WatchList]):
 
         WatchlistService.add_movie_to_watchlist(
             watchlist_id=watchlist.id,
-            movie_id=serializer.validated_data['movie'].id,
+            movie_id=serializer.validated_data["movie"].id,
             owner_id=self.request.user.id,
         )
         watchlist = self.get_queryset().get(id=watchlist.id)

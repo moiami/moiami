@@ -42,5 +42,7 @@ def get_all_images() -> QuerySet[Image, Image]:
     return Image.objects.all()
 
 
-def get_movie_by_subscription_id(subscription_id: uuid.UUID) -> QuerySet[Movie]:
+def get_movie_by_subscription_id(
+    subscription_id: uuid.UUID,
+) -> QuerySet[Movie]:
     return Movie.objects.filter(subscriptions__id=subscription_id)

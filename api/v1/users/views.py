@@ -18,9 +18,6 @@ from services.watchlist import WatchlistService
 
 
 class UserViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = get_users()
@@ -30,21 +27,18 @@ class UserViewSet(
         try:
             return UUID(str(pk))
         except (TypeError, ValueError) as exc:
-            raise NotFound('User not found') from exc
+            raise NotFound("User not found") from exc
 
     """
     The following 3 lines gives our endpoint 2 query params:
     GET /api/v1/users/?search=slava - filters by username or email containing "john"
     GET /api/v1/users/?ordering=username - sorts results by username
     """
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['username', 'email']
-    ordering_fields = ['date_joined', 'username']
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return UserCreateSerializer
-        if self.action == 'retrieve':
+        if self.action == "retrieve":
             return UserDetailSerializer
         return UserListSerializer
 
@@ -53,25 +47,15 @@ class UserViewSet(
     Create is alsostandard, but we override it because the default
     would respond with UserCreateSerializer data - we want to respond with full user detail instead
     """
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response(
-            UserDetailSerializer(user).data,
-            status=status.HTTP_201_CREATED,
-        )
 
-    @action(detail=True, methods=['get'], url_path='subscriptions')
+    @action(detail=True, methods=["get"], url_path="subscriptions")
     def subscriptions(self, request, pk=None):
         qs = subscriptions_service.get_user_subscriptions(
             self._parse_user_id(pk)
         )
         return Response(UserSubscriptionSerializer(qs, many=True).data)
 
-    @action(detail=True, methods=['get'], url_path='watchlists')
+    @action(detail=True, methods=["get"], url_path="watchlists")
     def watchlists(self, request, pk=None):
-        qs = WatchlistService.get_all_watchlists(
-            self._parse_user_id(pk)
-        )
+        qs = WatchlistService.get_all_watchlists(self._parse_user_id(pk))
         return Response(WatchListSerializer(qs, many=True).data)

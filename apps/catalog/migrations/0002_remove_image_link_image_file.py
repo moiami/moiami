@@ -6,19 +6,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('catalog', '0001_initial'),
+        ("catalog", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='image',
-            name='link',
+            model_name="image",
+            name="link",
         ),
         migrations.AddField(
-            model_name='image',
-            name='file',
-            field=models.FileField(blank=True, max_length=500, null=True, storage=config.settings.MinioPosterStorage(), upload_to=apps.catalog.models.poster_upload_path),
+            model_name="image",
+            name="file",
+            field=models.FileField(
+                blank=True,
+                max_length=500,
+                null=True,
+                storage=config.settings.MinioPosterStorage(),
+                upload_to=apps.catalog.models.poster_upload_path,
+            ),
         ),
     ]

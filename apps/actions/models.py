@@ -23,5 +23,5 @@ class MovieGetAction(Model):
     movie = ForeignKey(
         Movie,
         on_delete=CASCADE,
-        related_name='get_actions',
+        related_name="get_actions",
     )

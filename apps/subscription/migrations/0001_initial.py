@@ -5,35 +5,61 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Subscription',
+            name="Subscription",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField(blank=True)),
-                ('price', models.DecimalField(decimal_places=2, max_digits=5)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField(blank=True)),
+                ("price", models.DecimalField(decimal_places=2, max_digits=5)),
             ],
             options={
-                'ordering': ('price',),
+                "ordering": ("price",),
             },
         ),
         migrations.CreateModel(
-            name='UserSubscription',
+            name="UserSubscription",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_id', models.UUIDField(db_index=True)),
-                ('expired_at', models.DateTimeField()),
-                ('subscription', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='user_subscriptions', to='subscription.subscription')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("user_id", models.UUIDField(db_index=True)),
+                ("expired_at", models.DateTimeField()),
+                (
+                    "subscription",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="user_subscriptions",
+                        to="subscription.subscription",
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('user_id', 'subscription'), name='unique_user_subscription')],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("user_id", "subscription"),
+                        name="unique_user_subscription",
+                    )
+                ],
             },
         ),
     ]

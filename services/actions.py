@@ -39,6 +39,6 @@ class MovieGetActionService:
                 get_actions__happened_at__gte=start_timestamp,
                 get_actions__happened_at__lte=end_timestamp,
             )
-            .annotate(views_count=Count('get_actions'))
-            .order_by('-views_count', 'id')[:limit]
+            .annotate(views_count=Count("get_actions"))
+            .order_by("-views_count", "id")[:limit]
         )

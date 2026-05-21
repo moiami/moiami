@@ -7,7 +7,7 @@ class Subscription(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
-        ordering = ('price',)
+        ordering = ("price",)
 
     def __str__(self):
         return f"{self.name} (price: {self.price})"
@@ -18,15 +18,15 @@ class UserSubscription(models.Model):
     subscription = models.ForeignKey(
         Subscription,
         on_delete=models.PROTECT,
-        related_name='user_subscriptions'
+        related_name="user_subscriptions",
     )
     expired_at = models.DateTimeField()
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user_id', 'subscription'],
-                name='unique_user_subscription',
+                fields=["user_id", "subscription"],
+                name="unique_user_subscription",
             )
         ]
 

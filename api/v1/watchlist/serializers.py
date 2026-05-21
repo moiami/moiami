@@ -7,31 +7,29 @@ from apps.watchlist.models import WatchList
 class WatchListMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'name']
-        read_only_fields = ['id', 'name']
+        fields = ["id", "name"]
+        read_only_fields = ["id", "name"]
 
 
 class WatchListAddMovieSerializer(serializers.Serializer):
     movie_id = serializers.PrimaryKeyRelatedField(
         queryset=Movie.objects.all(),
-        source='movie',
+        source="movie",
     )
 
 
 class WatchListListSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(
-        trim_whitespace=True
-    )
+    name = serializers.CharField(trim_whitespace=True)
 
     class Meta:
         model = WatchList
-        fields = ['id', 'name']
-        read_only_fields = ['id']
+        fields = ["id", "name"]
+        read_only_fields = ["id"]
 
 
 class WatchListSerializer(WatchListListSerializer):
     movies = WatchListMovieSerializer(many=True, read_only=True)
 
     class Meta(WatchListListSerializer.Meta):
-        fields = ['id', 'name', 'movies']
-        read_only_fields = ['id', 'movies']
+        fields = ["id", "name", "movies"]
+        read_only_fields = ["id", "movies"]

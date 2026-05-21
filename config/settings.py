@@ -27,7 +27,7 @@ def parse_list_from_env(name: str, default: list[str]) -> list[str]:
     value = os.getenv(name)
     if value is None:
         return default
-    return [item.strip() for item in value.split(',') if item.strip()]
+    return [item.strip() for item in value.split(",") if item.strip()]
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,95 +37,98 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = parse_bool_from_env('DEBUG')
+DEBUG = parse_bool_from_env("DEBUG")
 
-ALLOWED_HOSTS = parse_list_from_env('ALLOWED_HOSTS', [])
+ALLOWED_HOSTS = parse_list_from_env("ALLOWED_HOSTS", [])
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'django_filters',
-    'drf_spectacular',
-    'apps.actions',
-    'apps.catalog',
-    'apps.subscription',
-    'apps.watchlist',
-    'apps.users',
-    'storages',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "django_filters",
+    "drf_spectacular",
+    "apps.actions",
+    "apps.catalog",
+    "apps.subscription",
+    "apps.watchlist",
+    "apps.users",
+    "storages",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'postgres'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "postgres"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'minioadmin')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', 'minioadmin')
-AWS_POSTERS_BUCKET_NAME = os.getenv('AWS_POSTERS_BUCKET_NAME', 'posters')
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'videos')
-AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL', 'http://s3:9000')
-AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_DEFAULT_ACL = os.getenv('AWS_DEFAULT_ACL', 'public-read')
-AWS_QUERYSTRING_AUTH = os.getenv(
-    'AWS_QUERYSTRING_AUTH', 'False').lower() == 'true'
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "minioadmin")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "minioadmin")
+AWS_POSTERS_BUCKET_NAME = os.getenv("AWS_POSTERS_BUCKET_NAME", "posters")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", "videos")
+AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL", "http://s3:9000")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-1")
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL", "public-read")
+AWS_QUERYSTRING_AUTH = (
+    os.getenv("AWS_QUERYSTRING_AUTH", "False").lower() == "true"
+)
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
+    "CacheControl": "max-age=86400",
 }
-AWS_S3_CUSTOM_DOMAIN = os.getenv(
-    'AWS_S3_CUSTOM_DOMAIN', 'localhost:9000') + '/videos'
-AWS_POSTERS_CUSTOM_DOMAIN = os.getenv(
-    'AWS_POSTERS_CUSTOM_DOMAIN', 'localhost:9000') + '/posters'
+AWS_S3_CUSTOM_DOMAIN = (
+    os.getenv("AWS_S3_CUSTOM_DOMAIN", "localhost:9000") + "/videos"
+)
+AWS_POSTERS_CUSTOM_DOMAIN = (
+    os.getenv("AWS_POSTERS_CUSTOM_DOMAIN", "localhost:9000") + "/posters"
+)
 AWS_S3_SECURE_URLS = False
-AWS_S3_URL_PROTOCOL = 'http:'
+AWS_S3_URL_PROTOCOL = "http:"
 
 
 class MinioVideoStorage(S3Boto3Storage):
@@ -153,25 +156,25 @@ POSTER_STORAGE = MinioPosterStorage()
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -180,28 +183,28 @@ USE_TZ = True
 # DRF API
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
     ],
-    'DEFAULT_PAGINATION_CLASS': 'domain.pagination.StandardResultsSetPagination',
-    'EXCEPTION_HANDLER': 'api.common.exceptions.exception_handler',
+    "DEFAULT_PAGINATION_CLASS": "domain.pagination.StandardResultsSetPagination",
+    "EXCEPTION_HANDLER": "api.common.exceptions.exception_handler",
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'User Management API',
-    'DESCRIPTION': 'API для регистрации, получения и удаления пользователей.',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "User Management API",
+    "DESCRIPTION": "API для регистрации, получения и удаления пользователей.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

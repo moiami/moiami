@@ -101,7 +101,7 @@ def exception_handler(e, context):
         response.data = {
             "error": {
                 "code": "api_error",
-                "message": str(response.data.get("detail", response.data))
+                "message": str(response.data.get("detail", response.data)),
             }
         }
 

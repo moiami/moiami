@@ -1,5 +1,6 @@
 class DomainException(Exception):
     """Общее исключение для бизнес-логики"""
+
     pass
 
 

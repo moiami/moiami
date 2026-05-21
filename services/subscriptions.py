@@ -27,8 +27,7 @@ def get_available_subscriptions() -> QuerySet[Subscription]:
 
 def get_user_subscriptions(user_id: UUID) -> QuerySet[UserSubscription]:
     return (
-        UserSubscription.objects
-        .select_related("subscription")
+        UserSubscription.objects.select_related("subscription")
         .filter(user_id=user_id)
         .order_by("expired_at")
     )
@@ -44,21 +43,20 @@ def subscribe_user(user_id: UUID, subscription_id: int) -> UserSubscription:
     )
 
     user_subscription, created = (
-        UserSubscription.objects
-        .select_for_update()
-        .get_or_create(
+        UserSubscription.objects.select_for_update().get_or_create(
             user_id=user_id,
             subscription=subscription,
             defaults={
                 "expired_at": now + timedelta(days=SUBSCRIPTION_DURATION_DAYS)
-            }
+            },
         )
     )
 
     if not created:
         start_time = max(user_subscription.expired_at, now)
-        user_subscription.expired_at = start_time + \
-            timedelta(days=SUBSCRIPTION_DURATION_DAYS)
+        user_subscription.expired_at = start_time + timedelta(
+            days=SUBSCRIPTION_DURATION_DAYS
+        )
         user_subscription.save(update_fields=["expired_at"])
 
     return user_subscription
@@ -77,16 +75,16 @@ def check_subscription(user_id: UUID, subscription_id: int) -> bool:
 def get_users_with_subscription(subscription_id: int) -> list[dict[str, Any]]:
     get_subscription(subscription_id)
 
-    user_subscriptions = (
-        UserSubscription.objects
-        .filter(subscription_id=subscription_id)
-        .order_by("expired_at")
-    )
+    user_subscriptions = UserSubscription.objects.filter(
+        subscription_id=subscription_id
+    ).order_by("expired_at")
 
     return [_map_user_subscription(item) for item in user_subscriptions]
 
 
-def _map_user_subscription(user_subscription: UserSubscription) -> dict[str, Any]:
+def _map_user_subscription(
+    user_subscription: UserSubscription,
+) -> dict[str, Any]:
     return {
         "user_id": user_subscription.user_id,
         "subscription_expires_at": user_subscription.expired_at,

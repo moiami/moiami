@@ -5,14 +5,12 @@ from . import views
 
 router = DefaultRouter()
 router.register(
-    r'subscriptions',
-    views.SubscriptionViewSet,
-    basename='subscription'
+    r"subscriptions", views.SubscriptionViewSet, basename="subscription"
 )
 router.register(
-    r'user-subscriptions',
+    r"user-subscriptions",
     views.UserSubscriptionViewSet,
-    basename='user-subscription'
+    basename="user-subscription",
 )
 
 # GET /subscriptions/
@@ -22,5 +20,5 @@ router.register(
 # POST /user-subscriptions/add/
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]

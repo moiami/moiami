@@ -14,7 +14,7 @@ class WatchList(models.Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
     owner_id = UUIDField(db_index=True)
     name = CharField(max_length=255)
-    movies = ManyToManyField(Movie, related_name='watchlists', blank=True)
+    movies = ManyToManyField(Movie, related_name="watchlists", blank=True)
 
     def __str__(self):
         return str(self.name) + str(self.id)

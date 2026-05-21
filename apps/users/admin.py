@@ -6,10 +6,12 @@ from .models import UserProfile
 
 admin.site.unregister(User)
 
+
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ['username', 'email', 'is_staff', 'date_joined']
+    list_display = ["username", "email", "is_staff", "date_joined"]
+
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'id']
+    list_display = ["user", "id"]

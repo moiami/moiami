@@ -63,7 +63,11 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+    parser_classes = [
+        parsers.MultiPartParser,
+        parsers.FormParser,
+        parsers.JSONParser,
+    ]
     queryset = catalog_service.get_all_images()
 
     def get_queryset(self):
@@ -81,7 +85,7 @@ class ImageViewSet(viewsets.ModelViewSet):
         return Response(
             ImageSerializer(image).data,
             status=status.HTTP_201_CREATED,
-            headers={'Location': f'/api/v1/catalog/images/{image.id}/'}
+            headers={"Location": f"/api/v1/catalog/images/{image.id}/"},
         )
 
     def list(self, request, *args, **kwargs):
@@ -100,7 +104,11 @@ class VideoViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+    parser_classes = [
+        parsers.MultiPartParser,
+        parsers.FormParser,
+        parsers.JSONParser,
+    ]
     queryset = Video.objects.all()
 
     def get_queryset(self):
@@ -118,7 +126,7 @@ class VideoViewSet(viewsets.ModelViewSet):
         return Response(
             VideoSerializer(video).data,
             status=status.HTTP_201_CREATED,
-            headers={'Location': f'/api/v1/catalog/videos/{video.id}/'}
+            headers={"Location": f"/api/v1/catalog/videos/{video.id}/"},
         )
 
     def list(self, request, *args, **kwargs):
@@ -138,7 +146,15 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = [HeaderUserAuthentication]
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['director', 'script_writer', 'age_restriction', 'date', 'date_of_premiere', 'country', 'genres']
+    filterset_fields = [
+        "director",
+        "script_writer",
+        "age_restriction",
+        "date",
+        "date_of_premiere",
+        "country",
+        "genres",
+    ]
     queryset = catalog_service.get_all_movies()
 
     def get_queryset(self):
@@ -161,32 +177,42 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(movie)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'], url_path='film_statistics',
-            permission_classes=[IsAdminHeaderUser])
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="film_statistics",
+        permission_classes=[IsAdminHeaderUser],
+    )
     def film_statistics(self, request, pk=None):
         movie = self.get_object()
-        query_serializer = MovieStatisticsQuerySerializer(data=request.query_params)
+        query_serializer = MovieStatisticsQuerySerializer(
+            data=request.query_params
+        )
         query_serializer.is_valid(raise_exception=True)
 
-        start_timestamp = query_serializer.validated_data['start_timestamp']
-        end_timestamp = query_serializer.validated_data['end_timestamp']
+        start_timestamp = query_serializer.validated_data["start_timestamp"]
+        end_timestamp = query_serializer.validated_data["end_timestamp"]
 
         views_count = MovieGetActionService.count_by_movie_and_period(
             movie=movie,
             start_timestamp=start_timestamp,
             end_timestamp=end_timestamp,
         )
-        return Response({'views_count': views_count})
+        return Response({"views_count": views_count})
 
-    @action(detail=False, methods=['get'], url_path='top',
-            permission_classes=[IsAdminHeaderUser])
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="top",
+        permission_classes=[IsAdminHeaderUser],
+    )
     def top(self, request):
         query_serializer = TopMoviesQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
 
-        start_timestamp = query_serializer.validated_data['start_timestamp']
-        end_timestamp = query_serializer.validated_data['end_timestamp']
-        limit = query_serializer.validated_data['limit']
+        start_timestamp = query_serializer.validated_data["start_timestamp"]
+        end_timestamp = query_serializer.validated_data["end_timestamp"]
+        limit = query_serializer.validated_data["limit"]
 
         movies = MovieGetActionService.get_top_movies_by_views(
             start_timestamp=start_timestamp,
@@ -196,12 +222,16 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = TopMovieListSerializer(movies, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'], url_path='genres')
+    @action(detail=True, methods=["get"], url_path="genres")
     def genres(self, request, pk):
         genres_queryset = catalog_service.get_genre_by_movie_id(pk)
         return Response(GenreListSerializer(genres_queryset, many=True).data)
 
-    @action(detail=False, methods=['get'], url_path='subscriptions/<uuid:subscription_id>')
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="subscriptions/<uuid:subscription_id>",
+    )
     def by_subscription(self, request, subscription_id):
         """Получить все фильмы по ID подписки"""
         if not isinstance(subscription_id, uuid.UUID):
