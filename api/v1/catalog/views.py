@@ -1,22 +1,18 @@
-import pathlib
 import uuid
-from uuid import uuid4
 
-from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import parsers, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.common.authentication import HeaderUser, HeaderUserAuthentication
-from api.common.permissions import IsAdminHeaderUser
 from api.v1.catalog.serializers import (
     GenreListSerializer,
     GenreSerializer,
     ImageListSerializer,
     ImageSerializer,
+    MovieCreateSerializer,
     MovieListSerializer,
     MovieSerializer,
     MovieStatisticsQuerySerializer,
@@ -29,7 +25,6 @@ from apps.catalog.models import Video
 from domain import exceptions as domain_exceptions
 from services import catalog as catalog_service
 from services.actions import MovieGetActionService
-from services.s3 import generate_presigned_post, generate_presigned_url
 
 
 class GenreViewSet(viewsets.ReadOnlyModelViewSet):
@@ -46,6 +41,20 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == "list":
             return GenreListSerializer
         return GenreSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Создание нового жанра.
+        POST /api/v1/catalog/genres/
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        genre = serializer.save()
+        return Response(
+            GenreSerializer(genre).data,
+            status=status.HTTP_201_CREATED,
+            headers={"Location": f"/api/v1/catalog/genres/{genre.id}/"},
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -163,7 +172,23 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return MovieListSerializer
+        if self.action == "create":
+            return MovieCreateSerializer
         return MovieSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Создание нового фильма.
+        POST /api/v1/catalog/movies/
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        movie = serializer.save()
+        return Response(
+            MovieSerializer(movie).data,
+            status=status.HTTP_201_CREATED,
+            headers={"Location": f"/api/v1/catalog/movies/{movie.id}/"},
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -181,7 +206,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         detail=True,
         methods=["get"],
         url_path="film_statistics",
-        permission_classes=[IsAdminHeaderUser],
+        permission_classes=[AllowAny],
     )
     def film_statistics(self, request, pk=None):
         movie = self.get_object()
@@ -204,7 +229,7 @@ class MovieViewSet(viewsets.ReadOnlyModelViewSet):
         detail=False,
         methods=["get"],
         url_path="top",
-        permission_classes=[IsAdminHeaderUser],
+        permission_classes=[AllowAny],
     )
     def top(self, request):
         query_serializer = TopMoviesQuerySerializer(data=request.query_params)

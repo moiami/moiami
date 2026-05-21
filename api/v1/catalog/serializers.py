@@ -83,6 +83,24 @@ class MovieSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
+class MovieCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = [
+            "name",
+            "description",
+            "director",
+            "script_writer",
+            "age_restriction",
+            "date",
+            "date_of_premiere",
+            "country",
+            "subscriptions",
+            "poster",
+            "video",
+        ]
+
+
 class MovieStatisticsQuerySerializer(serializers.Serializer):
     start_timestamp = serializers.IntegerField(
         min_value=0,

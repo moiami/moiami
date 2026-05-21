@@ -52,14 +52,3 @@ def generate_presigned_post(
         )
     except ClientError:
         return None
-
-
-def delete_file(file_key: str) -> bool:
-    try:
-        client = get_client()
-        client.delete_object(
-            Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=file_key
-        )
-        return True
-    except ClientError:
-        return False
