@@ -12,7 +12,6 @@ from django.db.models import (
     ManyToManyField,
     OneToOneField,
     TextField,
-    URLField,
     UUIDField,
 )
 
@@ -24,6 +23,11 @@ def video_upload_path(instance, filename):
     ext = pathlib.Path(filename).suffix.lower()
     quality = instance.quality or 'unknown'
     return f"{quality}/{uuid.uuid4().hex}{ext}"
+
+
+def poster_upload_path(instance, filename):
+    ext = pathlib.Path(filename).suffix.lower()
+    return f"posters/{uuid.uuid4().hex}{ext}"
 
 class Genre(models.Model):
     id = UUIDField(primary_key=True,default=uuid.uuid4)
@@ -74,7 +78,25 @@ class Video(models.Model):
 
 class Image(models.Model):
     id = UUIDField(primary_key=True,default=uuid.uuid4)
-    link = URLField()
+    file = FileField(
+        upload_to=poster_upload_path,
+        max_length=500,
+        storage=settings.POSTER_STORAGE,
+        null=True,
+        blank=True
+    )
+
+    @property
+    def link(self):
+        if not self.file:
+            return None
+        if getattr(settings, 'AWS_QUERYSTRING_AUTH', False) is False:
+            return self.file.url
+        return generate_presigned_url(
+            self.file.name,
+            expiration=3600
+        )
+
     def __str__(self):
         return str(self.id)
 

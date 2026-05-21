@@ -14,6 +14,7 @@ services:
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
       AWS_STORAGE_BUCKET_NAME: videos
+      AWS_POSTERS_BUCKET_NAME: posters
       AWS_S3_ENDPOINT_URL: http://s3:9000
       AWS_DEFAULT_ACL: public-read
       AWS_QUERYSTRING_AUTH: "false"
@@ -78,7 +79,9 @@ services:
       done;
       echo 'Creating bucket...';
       mc mb -p myminio/videos || true;
+      mc mb -p myminio/posters || true;
       mc anonymous set public myminio/videos;
+      mc anonymous set public myminio/posters;
       echo 'Done!';
       exit 0;
       "

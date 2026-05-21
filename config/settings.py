@@ -109,16 +109,21 @@ DATABASES = {
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'minioadmin')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', 'minioadmin')
+AWS_POSTERS_BUCKET_NAME = os.getenv('AWS_POSTERS_BUCKET_NAME', 'posters')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'videos')
 AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL', 'http://s3:9000')
 AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_DEFAULT_ACL = os.getenv('AWS_DEFAULT_ACL', 'public-read')
-AWS_QUERYSTRING_AUTH = os.getenv('AWS_QUERYSTRING_AUTH', 'False').lower() == 'true'
+AWS_QUERYSTRING_AUTH = os.getenv(
+    'AWS_QUERYSTRING_AUTH', 'False').lower() == 'true'
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'localhost:9000') + '/videos'
+AWS_S3_CUSTOM_DOMAIN = os.getenv(
+    'AWS_S3_CUSTOM_DOMAIN', 'localhost:9000') + '/videos'
+AWS_POSTERS_CUSTOM_DOMAIN = os.getenv(
+    'AWS_POSTERS_CUSTOM_DOMAIN', 'localhost:9000') + '/posters'
 AWS_S3_SECURE_URLS = False
 AWS_S3_URL_PROTOCOL = 'http:'
 
@@ -131,6 +136,17 @@ class MinioVideoStorage(S3Boto3Storage):
 
 
 VIDEO_STORAGE = MinioVideoStorage()
+
+
+class MinioPosterStorage(S3Boto3Storage):
+    bucket_name = AWS_POSTERS_BUCKET_NAME
+    default_acl = AWS_DEFAULT_ACL
+    querystring_auth = AWS_QUERYSTRING_AUTH
+    file_overwrite = False
+    custom_domain = AWS_POSTERS_CUSTOM_DOMAIN
+
+
+POSTER_STORAGE = MinioPosterStorage()
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

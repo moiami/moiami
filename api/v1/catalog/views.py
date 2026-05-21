@@ -58,11 +58,12 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class ImageViewSet(viewsets.ReadOnlyModelViewSet):
+class ImageViewSet(viewsets.ModelViewSet):
     """Viewset для обложек"""
 
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
     queryset = catalog_service.get_all_images()
 
     def get_queryset(self):
@@ -72,6 +73,16 @@ class ImageViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == "list":
             return ImageListSerializer
         return ImageSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        image = serializer.save()
+        return Response(
+            ImageSerializer(image).data,
+            status=status.HTTP_201_CREATED,
+            headers={'Location': f'/api/v1/catalog/images/{image.id}/'}
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

@@ -24,8 +24,8 @@ class ImageListSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ["id", "link"]
-        read_only_fields = ["id"]
+        fields = ["id", "file", "link"]
+        read_only_fields = ["id", "link"]
 
 class VideoListSerializer(serializers.ModelSerializer):
     class Meta:
