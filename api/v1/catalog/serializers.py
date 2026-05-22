@@ -98,6 +98,7 @@ class MovieCreateSerializer(serializers.ModelSerializer):
             "subscriptions",
             "poster",
             "video",
+            "genres",
         ]
 
 
