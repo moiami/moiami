@@ -448,7 +448,6 @@ json
 
 **Ответ:** обновлённый WatchList.
 
-Заголовки: X-User-Id, X-User-Role=["admin"].
 
 <pre>
     moiami_resource_service/
