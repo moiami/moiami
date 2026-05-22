@@ -24,81 +24,431 @@
 
 ### Эндпоинты:
 
-1. GET /api/v1/catalog/movies/
-2. GET /api/v1/catalog/movies/{id}/
-3. GET /api/v1/catalog/movies/{id}/genres/
-4. GET /api/v1/catalog/movies/subscriptions/{subscription_id}/
-5. GET /api/v1/catalog/genres/
-6. GET /api/v1/catalog/genres/{id}/
-7.  GET /api/v1/catalog/images/
-8.  GET /api/v1/catalog/images/{id}/
-9. GET /api/v1/catalog/videos/
-10. GET /api/v1/catalog/videos/{id}/
-11. GET /api/v1/subscriptions/
-12. GET /api/v1/subscriptions/{id}/
-13. POST /api/v1/user-subscriptions/add/
-14. GET /api/v1/user-subscriptions/check/{subscription_id}/
-15. GET /api/v1/user-subscriptions/{subscription_id}/users/
-16. POST /api/v1/users/
-17. GET /api/v1/users/
-18. GET /api/v1/users/{id}/
-19. GET /api/v1/users/{id}/subscriptions/
-20. GET /api/v1/users/{id}/watchlists/
-21. GET /api/v1/watchlists
-22. POST /api/v1/watchlists
-23. GET /api/v1/watchlists/{id}
-24. PUT /api/v1/watchlists/{id}
-25. PATCH /api/v1/watchlists/{id}
-26. DELETE /api/v1/watchlists/{id}
-27. POST /api/v1/watchlists/{id}/movies
-28. GET /api/v1/catalog/movies/{id}/film_statistics/?start_timestamp={timestamp}&end_timestamp={timestamp}
-29. GET /api/v1/catalog/movies/top/?start_timestamp={timestamp}&end_timestamp={timestamp}&limit={count}
+#### 1. GET /api/v1/catalog/genres/
 
-##### Статистика просмотров:
+**Описание:** Получение списка всех жанров.
 
-​GET /api/v1/catalog/movies/{id}/ создает запись просмотра фильма.
+**Ответ:**
 
----
-
-​GET /api/v1/catalog/movies/{id}/film_statistics/ возвращает количество просмотров за период в формате JSON:
-
-Пример запроса:
-
-​GET /api/v1/catalog/movies/{id}/film_statistics/?start_timestamp=1777820400&end_timestamp=1777906800
-
-Пример:
-```json
-{
-  "views_count": 10
-}
 ```
-
-​Параметры запроса: start_timestamp, end_timestamp - Unix timestamp в секундах.
-
-​Заголовки: X-User-Id, X-User-Role=["admin"].
-
----
-
-​GET /api/v1/catalog/movies/top/ возвращает топ фильмов по просмотрам за период в формате JSON:
-
-Пример запроса:
-
-​GET /api/v1/catalog/movies/top/?start_timestamp=1777820400&end_timestamp=1777906800&limit=3
-
-Пример:
-```json
 [
-  {
-    "id": "9c56ae83-8ad5-44de-b19b-ecfb56de04f1",
-    "name": "Movie name",
-    "views_count": 10
-  }
+  { "id": "uuid", "name": "string" }
 ]
 ```
 
-​Параметры запроса: start_timestamp, end_timestamp - Unix timestamp в секундах, limit - количество фильмов в топе.
+#### 2. POST /api/v1/catalog/genres/
 
-​Заголовки: X-User-Id, X-User-Role=["admin"].
+**Описание:** Создание нового жанра.
+
+**Тело запроса:**
+
+json
+
+```
+{
+  "name": "Новый жанр"
+}
+```
+
+
+
+**Ответ:**
+
+json
+
+```
+{
+  "id": "uuid",
+  "name": "Новый жанр"
+}
+```
+
+#### 3. GET /api/v1/catalog/genres/{id}/
+
+**Описание:** Получение информации о конкретном жанре.
+
+**Параметры пути:** id  (UUID)
+
+**Ответ:**
+
+json
+
+```
+{
+  "id": "uuid",
+  "name": "string"
+}
+```
+
+#### 4. GET /api/v1/catalog/images/
+
+**Описание:** Список всех изображений.
+
+**Ответ:**
+
+json
+
+```
+[
+  { "id": "uuid", "link": "url" }
+]
+```
+
+#### 5. POST /api/v1/catalog/images/
+
+**Описание:** Загрузка нового изображения. Поддерживает multipart/form-data, application/x-www-form-urlencoded.
+
+**Тело запроса (multipart/form-data):**
+
+​	file — файл изображения.
+
+**Ответ:**
+
+json
+
+```
+{
+  "id": "uuid",
+  "file": "путь к файлу",
+  "link": "url"
+}
+```
+
+#### 6. GET /api/v1/catalog/images/{id}/
+
+**Параметры пути:** id (UUID)
+
+**Ответ:**
+
+json
+
+```
+{
+  "id": "uuid",
+  "file": "string",
+  "link": "url"
+}
+```
+
+#### 7. PUT /api/v1/catalog/images/{id}/
+
+**Описание:** Обновление изображения.
+
+**Параметры пути:**  id (UUID)
+
+**Тело запроса (multipart/form-data):**
+
+​	file — файл изображения.
+
+**Ответ:** обновлённый объект.
+
+#### 8. DELETE /api/v1/catalog/images/{id}/
+
+**Описание:** Удаление изображения.
+
+**Ответ:** пустое тело
+
+#### 9. GET /api/v1/catalog/videos/
+
+**Описание:** Список всех видео.
+
+**Ответ:**
+
+json
+
+```
+[
+  { "id": "uuid", "link360": "url", "link1080": "url" }
+]
+```
+
+#### 10. POST /api/v1/catalog/videos/
+
+**Описание:** Загрузка нового видеофайла. Поддерживает multipart/form-data.
+
+**Тело запроса:**
+
+​	quality (строка)
+
+​	file (файл)
+
+**Ответ:**
+
+json
+
+```
+{
+  "id": "uuid",
+  "quality": "string",
+  "file": "путь",
+  "link360": "url",
+  "link1080": "url"
+}
+```
+
+#### 11. GET /api/v1/catalog/videos/{id}/
+
+**Описание:** Детали видео.
+
+**Ответ:** объект видео.
+
+#### 12. DELETE /api/v1/catalog/videos/{id}/
+
+**Описание:** Удаление видео.
+
+#### 13. GET /api/v1/catalog/movies/
+
+**Описание:** Список фильмов с фильтрацией.
+
+Можно производить поиск по полям: точное совпадение по полям director, script_writer, age_restriction, date, date_of_premiere, country, genres (UUID).
+
+**Ответ:**
+
+json
+
+```
+[
+  { "id": "uuid", "name": "string" }
+]
+```
+
+#### 14. POST /api/v1/catalog/movies/
+
+**Описание:** Создание нового фильма.
+
+**Тело запроса (JSON):**
+
+	1. name (string) 
+	1. description (string)
+	1. director (string)
+	1. script_writer (string)
+	1. age_restriction (string)
+	1. date (date)
+	1. date_of_premiere (date)
+	1. country (string)
+	1. subscriptions (список ID подписок)
+	1. poster (UUID изображения)
+	1. video (UUID видео)
+	1. genres (список UUID жанров)
+
+**Ответ:** полный объект фильма  с вложенными жанрами, постером и видео.
+
+#### 15. GET /api/v1/catalog/movies/{id}/
+
+**Описание:** Детальная информация о фильме. При наличии заголовка X-User-Id у запроса регистрируется действие просмотр.
+
+**Ответ:** объект Movie.
+
+#### 16. GET /api/v1/catalog/movies/{id}/genres/
+
+**Описание:** Жанры фильма.
+
+**Ответ:** массив жанров.
+
+#### 17. GET /api/v1/catalog/movies/{id}/film_statistics/
+
+**Описание:** Количество просмотров фильма за период.
+**Параметры:** start_timestamp (int), end_timestamp (int)
+
+**Ответ:**
+
+json
+
+```
+{ "views_count": 150 }
+```
+
+#### 18. GET /api/v1/catalog/movies/top/
+
+**Описание:** Топ фильмов по просмотрам за период.
+
+**Параметры:** start_timestamp, end_timestamp, limit (1-1000)
+
+**Ответ:**
+
+json
+
+```
+[
+  { "id": "uuid", "name": "string", "views_count": 500 }
+]
+```
+
+#### 19. GET /api/v1/catalog/movies/subscriptions/{subscription_id}/
+
+**Описание:** Фильмы, доступные по подписке.
+
+**Ответ:** массив фильмов.
+
+#### 20. GET /api/v1/subscriptions/
+
+**Описание:** Список всех доступных подписок.
+
+**Ответ:**
+
+json
+
+```
+[
+  { "id": 1, "name": "string" }
+]
+```
+
+#### 21. POST /api/v1/subscriptions/
+
+**Описание:** Создание новой подписки.
+
+**Тело запроса (JSON):**
+
+json
+
+```
+{
+  "name": "Название",
+  "description": "Описание",
+  "price": "99.99"
+}
+```
+
+**Ответ:** полный объект подписки.
+
+#### 22. GET /api/v1/subscriptions/{id}/
+
+**Описание:** Детали подписки.
+
+**Ответ:**
+
+json
+
+```
+{
+  "id": 1,
+  "name": "string",
+  "description": "string",
+  "price": "decimal"
+}
+```
+
+#### 23. POST /api/v1/user-subscriptions/add/
+
+**Описание:** Оформление подписки текущему пользователю.
+
+Обязателен заголовок X-User-Id
+
+**Тело запроса:**
+
+json
+
+```
+{ "subscription_id": 1 }
+```
+
+#### 24. GET /api/v1/user-subscriptions/check/{subscription_id}/
+
+**Описание:** Проверить наличие подписки у текущего пользователя.
+
+Обязателен заголовок X-User-Id
+
+**Ответ:**
+
+json
+
+```
+{
+  "user_id": "uuid",
+  "subscription_id": 1,
+  "has_subscription": true
+}
+```
+
+#### 25. GET /api/v1/user-subscriptions/{subscription_id}/users/
+
+**Описание:** Список пользователей, у которых есть данная подписка.
+
+Обязателен заголовок X-User-Id
+
+**Ответ:**
+
+json
+
+```
+{
+  "subscription_id": 1,
+  "users_count": 2,
+  "users": [
+    { "user_id": "uuid", "subscription_expires_at": "datetime" }
+  ]
+}
+```
+
+#### 26. GET /api/v1/watchlists
+
+**Описание:** Список watchlist'ов текущего пользователя.
+
+Обязателен заголовок X-User-Id
+
+**Ответ:**
+
+json
+
+```
+{
+  "count": 5,
+  "next": null,
+  "previous": null,
+  "watchlists": [
+    { "id": "uuid", "name": "string" }
+  ]
+}
+```
+
+Поддерживается пагинация.
+
+#### 27. POST /api/v1/watchlists
+
+**Описание:** Создание нового watchlist а.
+
+Обязателен заголовок X-User-Id
+
+**Тело запроса:**
+
+json
+
+```
+{ "name": "Мой список" }
+```
+
+**Ответ:** полный объект WatchList.
+
+#### 28. GET /api/v1/watchlists/{id}
+
+**Описание:** Детали watchlist'а.
+
+Обязателен заголовок X-User-Id
+
+**Ответ:** WatchList.
+
+#### 29. DELETE /api/v1/watchlists/{id}
+
+**Описание:** Удаление watchlist'а.
+
+#### 30. POST /api/v1/watchlists/{id}/movies
+
+**Описание:** Добавление фильма в watchlist.
+
+Обязателен заголовок X-User-Id
+
+**Тело запроса:**
+
+json
+
+```
+{ "movie_id": "uuid фильма" }
+```
+
+**Ответ:** обновлённый WatchList.
+
+Заголовки: X-User-Id, X-User-Role=["admin"].
 
 <pre>
     moiami_resource_service/
